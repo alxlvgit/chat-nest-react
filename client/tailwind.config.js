@@ -2,7 +2,11 @@
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "chat-background": "url('/background.jpg')",
+      },
+    },
   },
   plugins: [],
 };
