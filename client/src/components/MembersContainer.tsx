@@ -1,3 +1,5 @@
+// Layout for the members container on Chat page
+
 const MembersContainer = () => {
   return (
     <div className="members-container w-1/3 border-r-4 p-4 border-gray-800 border-opacity-90">

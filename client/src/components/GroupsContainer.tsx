@@ -1,3 +1,5 @@
+// Layout for the groups container on Chat page
+
 const GroupsContainer = () => {
   return (
     <div className="groups-container flex flex-col h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90">
