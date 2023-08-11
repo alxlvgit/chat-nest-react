@@ -6,6 +6,7 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { v4 } from 'uuid';
 
 @WebSocketGateway({ cors: true })
 export class MessagesGateway
@@ -25,6 +26,11 @@ export class MessagesGateway
   @SubscribeMessage('sendMessage')
   handleMessage(client: any, message: string) {
     console.log('Received message from client:', message, client.id);
-    this.server.emit('message', 'Hello from server! ' + client.id);
+    const formatMessage = {
+      id: v4(),
+      content: message,
+      senderId: client.id,
+    };
+    this.server.emit('message', formatMessage);
   }
 }

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 exports.__esModule = true;
 exports.MessagesGateway = void 0;
 var websockets_1 = require("@nestjs/websockets");
+var uuid_1 = require("uuid");
 var MessagesGateway = /** @class */ (function () {
     function MessagesGateway() {
     }
@@ -23,7 +24,12 @@ var MessagesGateway = /** @class */ (function () {
     };
     MessagesGateway.prototype.handleMessage = function (client, message) {
         console.log('Received message from client:', message, client.id);
-        this.server.emit('message', 'Hello from server! ' + client.id);
+        var formatMessage = {
+            id: uuid_1.v4(),
+            content: message,
+            senderId: client.id
+        };
+        this.server.emit('message', formatMessage);
     };
     __decorate([
         websockets_1.WebSocketServer()

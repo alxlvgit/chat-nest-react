@@ -1,16 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+// import Home from "./pages/Home";
 import Chat from "./pages/Chat";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:3000");
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<Chat socket={socket} />} />
+        {/* <Route path="/" element={<Home />} /> */}
+        {/* chat page is temporary home page for now */}
+        <Route path="/" element={<Chat />} />
       </Routes>
     </BrowserRouter>
   );
