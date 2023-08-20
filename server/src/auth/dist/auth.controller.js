@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -42,26 +45,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.AppController = void 0;
+exports.AuthController = void 0;
 var common_1 = require("@nestjs/common");
-var AppController = /** @class */ (function () {
-    function AppController(appService) {
-        this.appService = appService;
+var passport_1 = require("@nestjs/passport");
+var AuthController = /** @class */ (function () {
+    function AuthController(authService) {
+        this.authService = authService;
     }
-    AppController.prototype.test = function () {
+    AuthController.prototype.login = function (req) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                this.appService.getHello();
-                return [2 /*return*/];
+                return [2 /*return*/, this.authService.login(req.user)];
             });
         });
     };
     __decorate([
-        common_1.Get()
-    ], AppController.prototype, "test");
-    AppController = __decorate([
-        common_1.Controller()
-    ], AppController);
-    return AppController;
+        common_1.UseGuards(passport_1.AuthGuard('local')),
+        common_1.Post('/login'),
+        __param(0, common_1.Request())
+    ], AuthController.prototype, "login");
+    AuthController = __decorate([
+        common_1.Controller('auth')
+    ], AuthController);
+    return AuthController;
 }());
-exports.AppController = AppController;
+exports.AuthController = AuthController;

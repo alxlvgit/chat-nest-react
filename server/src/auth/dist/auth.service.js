@@ -42,26 +42,49 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.AppController = void 0;
+exports.AuthService = void 0;
 var common_1 = require("@nestjs/common");
-var AppController = /** @class */ (function () {
-    function AppController(appService) {
-        this.appService = appService;
+var bcrypt = require("bcrypt");
+var AuthService = /** @class */ (function () {
+    function AuthService(usersService, jwtService) {
+        this.usersService = usersService;
+        this.jwtService = jwtService;
     }
-    AppController.prototype.test = function () {
-        return __awaiter(this, void 0, void 0, function () {
+    AuthService.prototype.validateUser = function (email, password) {
+        return __awaiter(this, void 0, Promise, function () {
+            var user, passwordValid;
             return __generator(this, function (_a) {
-                this.appService.getHello();
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.usersService.getUser({ email: email })];
+                    case 1:
+                        user = _a.sent();
+                        if (!user)
+                            return [2 /*return*/, null];
+                        return [4 /*yield*/, bcrypt.compare(password, user.password)];
+                    case 2:
+                        passwordValid = _a.sent();
+                        if (user && passwordValid) {
+                            return [2 /*return*/, user];
+                        }
+                        return [2 /*return*/, null];
+                }
             });
         });
     };
-    __decorate([
-        common_1.Get()
-    ], AppController.prototype, "test");
-    AppController = __decorate([
-        common_1.Controller()
-    ], AppController);
-    return AppController;
+    AuthService.prototype.login = function (user) {
+        return __awaiter(this, void 0, void 0, function () {
+            var payload;
+            return __generator(this, function (_a) {
+                payload = { email: user.email, sub: user.id };
+                return [2 /*return*/, {
+                        access_token: this.jwtService.sign(payload)
+                    }];
+            });
+        });
+    };
+    AuthService = __decorate([
+        common_1.Injectable()
+    ], AuthService);
+    return AuthService;
 }());
-exports.AppController = AppController;
+exports.AuthService = AuthService;

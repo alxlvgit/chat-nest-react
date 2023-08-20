@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -42,26 +45,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.AppController = void 0;
+exports.UsersController = void 0;
 var common_1 = require("@nestjs/common");
-var AppController = /** @class */ (function () {
-    function AppController(appService) {
-        this.appService = appService;
+var bcrypt = require("bcrypt");
+var UsersController = /** @class */ (function () {
+    function UsersController(usersService) {
+        this.usersService = usersService;
     }
-    AppController.prototype.test = function () {
-        return __awaiter(this, void 0, void 0, function () {
+    UsersController.prototype.createUser = function (password, email, firstName, lastName) {
+        return __awaiter(this, void 0, Promise, function () {
+            var saltOrRounds, hashedPassword, result;
             return __generator(this, function (_a) {
-                this.appService.getHello();
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        saltOrRounds = 10;
+                        return [4 /*yield*/, bcrypt.hash(password, saltOrRounds)];
+                    case 1:
+                        hashedPassword = _a.sent();
+                        return [4 /*yield*/, this.usersService.createUser({
+                                email: email,
+                                password: hashedPassword,
+                                firstName: firstName,
+                                lastName: lastName
+                            })];
+                    case 2:
+                        result = _a.sent();
+                        return [2 /*return*/, result];
+                }
             });
         });
     };
     __decorate([
-        common_1.Get()
-    ], AppController.prototype, "test");
-    AppController = __decorate([
-        common_1.Controller()
-    ], AppController);
-    return AppController;
+        common_1.Post('/signup'),
+        __param(0, common_1.Body('password')),
+        __param(1, common_1.Body('email')),
+        __param(2, common_1.Body('firstName')),
+        __param(3, common_1.Body('lastName'))
+    ], UsersController.prototype, "createUser");
+    UsersController = __decorate([
+        common_1.Controller('auth')
+    ], UsersController);
+    return UsersController;
 }());
-exports.AppController = AppController;
+exports.UsersController = UsersController;

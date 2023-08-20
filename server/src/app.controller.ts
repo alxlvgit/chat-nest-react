@@ -1,15 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { UserService } from './user.service';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private userService: UserService) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
-  async seedDb() {
-    return this.userService.createUser({
-      email: 'test@mail.com',
-      name: 'test',
-    });
+  async test() {
+    this.appService.getHello();
   }
 }
