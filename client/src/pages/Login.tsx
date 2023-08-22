@@ -19,7 +19,9 @@ const LoginForm = () => {
         values
       );
       const accessToken = response.data.access_token;
-      login(accessToken);
+      const { firstName, lastName } = response.data;
+      const user = { firstName, lastName };
+      login(accessToken, user);
       console.log("Login successful!");
       navigate("/");
     } catch (error) {

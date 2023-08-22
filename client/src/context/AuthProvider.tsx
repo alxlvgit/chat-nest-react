@@ -6,29 +6,32 @@ import {
   ReactNode,
 } from "react";
 import { useCookies } from "react-cookie";
-import { AuthContextInterface } from "../interfaces/interfaces";
-
-
+import { AuthContextInterface, IUser } from "../interfaces/interfaces";
 
 const TOKEN_KEY = "jwtToken";
+const USER_KEY = "user";
 const AuthContext = createContext({} as AuthContextInterface);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [cookies, setCookie, removeCookie] = useCookies([TOKEN_KEY]);
+  const [cookies, setCookie, removeCookie] = useCookies([TOKEN_KEY, USER_KEY]);
   const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<IUser | null>(null);
 
-  // Check if token exists in cookies on initial load
+  // Check if token and user exists in cookies on initial load
   useEffect(() => {
     const token = cookies[TOKEN_KEY];
-
-    if (token) {
+    const user = cookies[USER_KEY];
+    if (token && user) {
       setAuthenticated(true);
+      setUser(user);
     }
   }, [cookies]);
 
-  const login = (token: string) => {
+  const login = (token: string, user: IUser) => {
     setCookie(TOKEN_KEY, token, { path: "/" });
+    setCookie(USER_KEY, user, { path: "/" });
     setAuthenticated(true);
+    setUser(user);
   };
 
   const logout = () => {
@@ -37,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authenticated, login, logout }}>
+    <AuthContext.Provider value={{ authenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

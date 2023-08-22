@@ -1,15 +1,17 @@
 import { useRef } from "react";
+import { useAuth } from "../context/AuthProvider";
 import useChatActions from "../hooks/useChatActions";
 
 const ChatForm = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { sendMessageToServer } = useChatActions();
+  const { user } = useAuth();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const text = inputRef.current!.value.trim();
     if (text.length > 0) {
-      sendMessageToServer(text);
+      sendMessageToServer(text, user?.firstName || "");
       inputRef.current!.value = "";
     }
   };
