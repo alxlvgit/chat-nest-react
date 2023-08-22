@@ -18,6 +18,7 @@ const ChatContainer = () => {
             key={message.id}
             incomingMessage={message.senderId !== socket.id}
             textContent={message.content}
+            sender={message.senderName}
           />
         ))}
       </div>

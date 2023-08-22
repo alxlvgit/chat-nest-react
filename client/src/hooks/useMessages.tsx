@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { useChat } from "../context/ChatProvider";
-
-interface IMessage {
-  content: string;
-  senderId: string;
-  id: string;
-}
+import { IMessage } from "../interfaces/interfaces";
 
 const useMessages = () => {
   const { socket } = useChat();
