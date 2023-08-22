@@ -28,14 +28,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [cookies]);
 
   const login = (token: string, user: IUser) => {
-    setCookie(TOKEN_KEY, token, { path: "/" });
-    setCookie(USER_KEY, user, { path: "/" });
+    const expirationTime = new Date();
+    expirationTime.setTime(expirationTime.getTime() + 3600 * 1000);
+    setCookie(TOKEN_KEY, token, { path: "/", expires: expirationTime });
+    setCookie(USER_KEY, user, { path: "/", expires: expirationTime });
     setAuthenticated(true);
     setUser(user);
   };
 
   const logout = () => {
     removeCookie(TOKEN_KEY, { path: "/" });
+    removeCookie(USER_KEY, { path: "/" });
     setAuthenticated(false);
   };
 

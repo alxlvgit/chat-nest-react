@@ -1,6 +1,7 @@
 import { useChat } from "../context/ChatProvider";
 import useMessages from "../hooks/useMessages";
 import ChatForm from "./ChatForm";
+import LogoutButton from "./LogoutButton";
 import { MessageContainer } from "./MessageContainer";
 
 const ChatContainer = () => {
@@ -9,8 +10,9 @@ const ChatContainer = () => {
 
   return (
     <div className="chatContainer flex flex-col w-full h-full relative">
-      <div className="chatHeader items-center text-center p-4 border-b-4 border-gray-800 border-opacity-90">
-        <h1 className="text-lg font-bold">Chat</h1>
+      <div className="chatHeader items-center text-center p-4 border-b-4 border-gray-800 border-opacity-90 flex justify-between">
+        <h1 className="text-lg font-bold">Group name</h1>
+        <LogoutButton />
       </div>
       <div className="flex p-4 flex-col flex-grow overflow-y-auto">
         {messages.map((message) => (
