@@ -1,9 +1,12 @@
 import { Formik, Form, Field } from "formik";
-import axios from "axios";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSignupMutation } from "../services/auth.service";
+import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [signup, { data, error }] = useSignupMutation();
   const initialValues = {
     password: "",
     email: "",
@@ -11,17 +14,24 @@ const RegisterForm = () => {
     lastName: "",
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      const response = await axios.post(
-        "https://server-nest-chat.onrender.com/auth/signup",
-        values
-      );
-      console.log(response.status);
+  useEffect(() => {
+    if (data && !error) {
+      toast.success("Registration successful! Please login.");
       navigate("/login");
-    } catch (error) {
+    } else if (error) {
+      toast.error("Registration failed! Please try again.");
       console.error("Registration failed:", error);
     }
+  }, [data, error]);
+
+  const handleSubmit = async (formValues: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  }) => {
+    const { email, password, firstName, lastName } = formValues;
+    signup({ email, password, firstName, lastName });
   };
 
   return (

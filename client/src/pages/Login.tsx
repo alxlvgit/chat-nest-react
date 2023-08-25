@@ -1,32 +1,38 @@
 import { Formik, Form, Field } from "formik";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import { useLoginMutation } from "../services/auth.service";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginUser } = useAuth();
+  const [login, { data, error }] = useLoginMutation();
 
   const initialValues = {
     email: "",
     password: "",
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      const response = await axios.post(
-        "https://server-nest-chat.onrender.com/auth/login",
-        values
-      );
-      const accessToken = response.data.access_token;
-      const { firstName, lastName } = response.data;
-      const user = { firstName, lastName };
-      login(accessToken, user);
-      console.log("Login successful!");
+  useEffect(() => {
+    if (data && !error) {
+      toast.success("Login successful!");
+      const { accessToken, user } = data;
+      loginUser(accessToken, user);
       navigate("/");
-    } catch (error) {
+    } else if (error) {
       console.error("Login failed:", error);
+      toast.error("Login failed! Please try again.");
     }
+  }, [data, error]);
+
+  const handleSubmit = async (formValues: {
+    email: string;
+    password: string;
+  }) => {
+    const { email, password } = formValues;
+    login({ email, password });
   };
 
   return (
