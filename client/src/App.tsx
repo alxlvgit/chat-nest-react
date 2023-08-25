@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from "./context/AuthProvider";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   function AppRoutes() {
@@ -33,6 +35,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <ToastContainer />
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
