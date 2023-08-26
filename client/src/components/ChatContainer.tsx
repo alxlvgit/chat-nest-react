@@ -1,4 +1,4 @@
-import { useChat } from "../context/ChatProvider";
+import { useAuth } from "../context/AuthProvider";
 import useMessages from "../hooks/useMessages";
 import ChatForm from "./ChatForm";
 import LogoutButton from "./LogoutButton";
@@ -6,7 +6,7 @@ import { MessageContainer } from "./MessageContainer";
 
 const ChatContainer = () => {
   const messages = useMessages();
-  const { socket } = useChat();
+  const { user } = useAuth();
 
   return (
     <div className="chatContainer flex flex-col w-full h-full relative">
@@ -18,7 +18,7 @@ const ChatContainer = () => {
         {messages.map((message) => (
           <MessageContainer
             key={message.id}
-            incomingMessage={message.senderId !== socket.id}
+            incomingMessage={message.senderEmail !== user?.email}
             textContent={message.content}
             sender={message.senderName}
           />

@@ -5,16 +5,21 @@ export interface AuthContextInterface {
   user: IUser | null;
 }
 
-export interface IMessage {
+export interface IClientMessage {
   content: string;
-  senderId: string;
   senderName: string;
+  senderEmail: string;
+}
+
+export interface IStoredMessage extends IClientMessage {
   id: string;
+  createdAt: string;
 }
 
 export interface IUser {
   firstName: string;
   lastName: string;
+  email: string;
 }
 
 export interface ILoginRequest {
