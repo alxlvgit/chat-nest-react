@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import { useChat } from "../context/ChatProvider";
-import { IMessage } from "../interfaces/interfaces";
+import { IStoredMessage } from "../interfaces/interfaces";
+import socket from "../utils/socketUtil";
 
 const useMessages = () => {
-  const { socket } = useChat();
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [messages, setMessages] = useState<IStoredMessage[]>([]);
 
+  // Listen for new messages and all messages on initial load
   useEffect(() => {
-    socket.on("message", (message: IMessage) => {
+    socket.on("message", (message: IStoredMessage) => {
       setMessages((messages) => [...messages, message]);
+    });
+
+    socket.on("allMessages", (allMessages: IStoredMessage[]) => {
+      setMessages(allMessages);
     });
 
     return () => {
       socket.off("message");
+      socket.off("allMessages");
     };
   }, [socket]);
 

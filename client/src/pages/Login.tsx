@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthProvider";
 import { useLoginMutation } from "../services/auth.service";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import socket from "../utils/socketUtil";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -15,11 +16,18 @@ const LoginForm = () => {
     password: "",
   };
 
+  // Handle login success or failure, request stored messages and navigate to home page
   useEffect(() => {
     if (data && !error) {
       toast.success("Login successful!");
-      const { accessToken, user } = data;
-      loginUser(accessToken, user);
+      const { access_token, firstName, lastName, email } = data;
+      const user = { firstName, lastName, email };
+      access_token &&
+        firstName &&
+        lastName &&
+        email &&
+        loginUser(access_token, user);
+      socket.emit("requestStoredMessages");
       navigate("/");
     } else if (error) {
       console.error("Login failed:", error);
@@ -27,6 +35,7 @@ const LoginForm = () => {
     }
   }, [data, error]);
 
+  // Handle form submission
   const handleSubmit = async (formValues: {
     email: string;
     password: string;

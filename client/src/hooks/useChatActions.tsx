@@ -1,14 +1,9 @@
-import { useChat } from "../context/ChatProvider";
+import { IClientMessage } from "../interfaces/interfaces";
+import socket from "../utils/socketUtil";
 
 const useChatActions = () => {
-  const { socket } = useChat();
-
-  const sendMessageToServer = (message: string, sender: string) => {
-    const messageObject = {
-      content: message,
-      senderName: sender,
-    };
-    socket.emit("sendMessage", messageObject);
+  const sendMessageToServer = (message: IClientMessage) => {
+    socket.emit("sendMessage", message);
   };
 
   return {

@@ -9,9 +9,16 @@ const ChatForm = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const text = inputRef.current!.value.trim();
-    if (text.length > 0) {
-      sendMessageToServer(text, user?.firstName || "");
+    const content = inputRef.current!.value.trim();
+    const createdAt = new Date().toISOString();
+    const message = {
+      content,
+      createdAt,
+      senderEmail: user!.email,
+      senderName: user!.firstName,
+    };
+    if (content.length > 0) {
+      sendMessageToServer(message);
       inputRef.current!.value = "";
     }
   };
