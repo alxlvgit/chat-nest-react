@@ -1,11 +1,13 @@
 import { useRef } from "react";
 import { useAuth } from "../context/AuthProvider";
 import useChatActions from "../hooks/useChatActions";
+import { useAppSelector } from "../redux/hooks";
 
 const ChatForm = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { sendMessageToServer } = useChatActions();
   const { user } = useAuth();
+  const room = useAppSelector((state) => state.chatSlice.currentRoom);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,9 +18,13 @@ const ChatForm = () => {
       createdAt,
       senderEmail: user!.email,
       senderName: user!.firstName,
+      room,
     };
-    if (content.length > 0) {
+    if (content.length > 0 && room) {
       sendMessageToServer(message);
+      inputRef.current!.value = "";
+    } else {
+      console.log("No room selected or message is empty");
       inputRef.current!.value = "";
     }
   };

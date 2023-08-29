@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthProvider";
 import { useLoginMutation } from "../services/auth.service";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import socket from "../utils/socketUtil";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -27,7 +26,6 @@ const LoginForm = () => {
         lastName &&
         email &&
         loginUser(access_token, user);
-      socket.emit("requestStoredMessages");
       navigate("/");
     } else if (error) {
       console.error("Login failed:", error);
