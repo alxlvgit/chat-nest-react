@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { IStoredMessage } from "../interfaces/interfaces";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import socket from "../utils/socketUtil";
+import { addMessage, setStoredMessages } from "../redux/features/chatSlice";
 
 const useMessages = () => {
-  const [messages, setMessages] = useState<IStoredMessage[]>([]);
+  const dispatch = useAppDispatch();
+  const messages = useAppSelector((state) => state.chatSlice.messages);
 
   // Listen for new messages and all messages on initial load
   useEffect(() => {
     socket.on("message", (message: IStoredMessage) => {
-      setMessages((messages) => [...messages, message]);
+      dispatch(addMessage(message));
     });
 
-    socket.on("allMessages", (allMessages: IStoredMessage[]) => {
-      setMessages(allMessages);
+    socket.on("storedMessages", (allMessages: IStoredMessage[]) => {
+      dispatch(setStoredMessages(allMessages));
     });
 
     return () => {
       socket.off("message");
-      socket.off("allMessages");
+      socket.off("storedMessages");
     };
   }, [socket]);
 

@@ -1,4 +1,4 @@
-import { IClientMessage } from "../interfaces/interfaces";
+import { IClientMessage, IRoom } from "../interfaces/interfaces";
 import socket from "../utils/socketUtil";
 
 const useChatActions = () => {
@@ -6,8 +6,18 @@ const useChatActions = () => {
     socket.emit("sendMessage", message);
   };
 
+  const joinRoom = (room: IRoom) => {
+    socket.emit("joinRoom", room);
+  };
+
+  const leaveRoom = (room: IRoom) => {
+    socket.emit("leaveRoom", room);
+  };
+
   return {
     sendMessageToServer,
+    joinRoom,
+    leaveRoom,
   };
 };
 

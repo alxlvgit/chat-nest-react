@@ -9,6 +9,7 @@ export interface IClientMessage {
   content: string;
   senderName: string;
   senderEmail: string;
+  room: IRoom | undefined;
 }
 
 export interface IStoredMessage extends IClientMessage {
@@ -32,4 +33,26 @@ export interface ISignUpRequest {
   password: string;
   firstName: string;
   lastName: string;
+}
+
+export interface IRoom {
+  id: number;
+  name: string;
+}
+
+export interface IStoredRoom extends IRoom {
+  messages: IStoredMessage[];
+}
+
+export interface ICreateRoomRequest {
+  name: string;
+}
+
+export interface IDeleteRoomRequest {
+  id: string;
+}
+
+export interface IUpdateRoomRequest {
+  id: string;
+  name: string;
 }
