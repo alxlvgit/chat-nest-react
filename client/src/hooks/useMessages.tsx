@@ -2,7 +2,11 @@ import { useEffect } from "react";
 import { IStoredMessage } from "../interfaces/interfaces";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import socket from "../utils/socketUtil";
-import { addMessage, setStoredMessages } from "../redux/features/chatSlice";
+import {
+  addMessage,
+  setStoredMessages,
+  setRoomMembers,
+} from "../redux/features/chatSlice";
 
 const useMessages = () => {
   const dispatch = useAppDispatch();
@@ -14,13 +18,15 @@ const useMessages = () => {
       dispatch(addMessage(message));
     });
 
-    socket.on("storedMessages", (allMessages: IStoredMessage[]) => {
-      dispatch(setStoredMessages(allMessages));
+    socket.on("roomData", (roomData) => {
+      const { roomMessages, roomMembers } = roomData;
+      dispatch(setStoredMessages(roomMessages));
+      dispatch(setRoomMembers(roomMembers));
     });
 
     return () => {
       socket.off("message");
-      socket.off("storedMessages");
+      socket.off("roomData");
     };
   }, [socket]);
 

@@ -18,7 +18,6 @@ export class MessagesGateway
   @WebSocketServer()
   server: Server;
 
-  // Send all messages to the client when they connect
   async handleConnection(client: any, ...args: any[]) {
     console.log('Client connected ' + client.id);
   }
@@ -33,29 +32,17 @@ export class MessagesGateway
     const alreadyJoinedRoom = client.rooms.has(room.name);
     if (!alreadyJoinedRoom) {
       const [currentRoom] = client.rooms;
-      // Leave the current room and join the new one
       if (currentRoom) {
         client.leave(currentRoom);
-        console.log('Client ' + client.id + ' leaving room ' + currentRoom);
       }
       client.join(room.name);
-      console.log('Client ' + client.id + ' joining room ' + room.name);
     }
-    client.emit(
-      'storedMessages',
-      await this.chatService.getAllMessagesForRoom(room.id),
-    );
-  }
+    console.log(client.rooms, 'joined room: ' + room.name);
+    const roomMessages = await this.chatService.getAllMessagesForRoom(room.id);
+    const roomMembers = await this.chatService.getRoomMembers(room.id);
+    console.log(roomMembers);
 
-  // Listen for requests for all messages for specific room
-  @SubscribeMessage('requestStoredMessages')
-  async handleAllMessages(client: any, room: IRoom) {
-    this.server
-      .to(room.name)
-      .emit(
-        'storedMessages',
-        await this.chatService.getAllMessagesForRoom(room.id),
-      );
+    client.emit('roomData', { roomMessages, roomMembers });
   }
 
   // Listen for messages from the client

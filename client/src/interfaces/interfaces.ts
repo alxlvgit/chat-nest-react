@@ -56,3 +56,10 @@ export interface IUpdateRoomRequest {
   id: string;
   name: string;
 }
+
+export interface IRoomParticipant {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}

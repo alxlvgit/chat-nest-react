@@ -9,8 +9,7 @@ export const chatAPI = createApi({
   reducerPath: "chatAPI",
   tagTypes: ["Chat"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://server-nest-chat.onrender.com/chat/",
-    // baseUrl: "http://localhost:3000/chat/",
+    baseUrl: import.meta.env.VITE_CHAT_API_URL || "http://localhost:3000/chat/",
   }),
   endpoints: (build) => ({
     getRooms: build.query<any, any>({

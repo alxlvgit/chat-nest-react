@@ -34,4 +34,19 @@ export class ChatService {
   async getRooms() {
     return await this.prisma.room.findMany();
   }
+
+  async getRoomMembers(roomId: number) {
+    const room = await this.prisma.room.findUnique({
+      where: {
+        id: roomId,
+      },
+      include: {
+        participants: true,
+      },
+    });
+    return room.participants.map((participant) => {
+      const { id, firstName, lastName, email } = participant;
+      return { id, firstName, lastName, email };
+    });
+  }
 }
