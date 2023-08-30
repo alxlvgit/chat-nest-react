@@ -5,8 +5,7 @@ export const authAPI = createApi({
   reducerPath: "authAPI",
   tagTypes: ["Post"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://server-nest-chat.onrender.com/auth/",
-    // baseUrl: "http://localhost:3000/auth/",
+    baseUrl: import.meta.env.VITE_AUTH_API_URL || "http://localhost:3000/auth/",
   }),
   endpoints: (build) => ({
     login: build.mutation<any, ILoginRequest>({

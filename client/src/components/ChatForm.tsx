@@ -38,7 +38,10 @@ const ChatForm = () => {
           className="text-black w-full p-2 rounded-md outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="Type a message..."
         />
-        <button type="submit" className="bg-blue-400 rounded-md p-2 ml-2">
+        <button
+          type="submit"
+          className="ml-4 p-2 rounded-md bg-cyan-800 text-sm"
+        >
           Send
         </button>
       </form>
