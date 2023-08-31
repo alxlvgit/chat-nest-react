@@ -6,7 +6,7 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { IMessage, IRoom } from 'src/interfaces/interfaces';
+import { IMessage, IRoom, IUser } from 'src/interfaces/interfaces';
 import { v4 } from 'uuid';
 import { ChatService } from './chat.service';
 
@@ -29,29 +29,50 @@ export class MessagesGateway
   }
 
   // Listen for requests to join a room
+  // Refactor this later
   @SubscribeMessage('joinRoom')
-  async handleJoiningTheRoom(client: any, room: IRoom) {
-    const alreadyJoinedRoom = client.rooms.has(room.name);
-    if (!alreadyJoinedRoom) {
-      const [currentRoom] = client.rooms;
-      if (currentRoom) {
-        client.leave(currentRoom);
+  async handleJoiningTheRoom(
+    client: any,
+    joinObject: { user: IUser; room: IRoom },
+  ) {
+    try {
+      const { user, room } = joinObject;
+      const storedRoom = await this.chatService.getRoom(room.id);
+      const previouslyVisitedRooms = client.rooms.has(room.name);
+      const isRoomMember = storedRoom.participants.some(
+        (participant) => participant.email === user.email,
+      );
+      // If the user is not a member of the room, add them to the room
+      if (!isRoomMember) {
+        await this.chatService.addUserToRoom(user.email, room.id);
       }
-      client.join(room.name);
+      // If the user has visited other rooms, leave them
+      if (!previouslyVisitedRooms) {
+        const [currentRoom] = client.rooms;
+        if (currentRoom) {
+          client.leave(currentRoom);
+        }
+        client.join(room.name);
+      }
+      console.log('client', client.id, 'joined room: ' + room.name);
+      const { messages, participants } = storedRoom;
+      client.emit('roomData', { messages, participants });
+    } catch (error) {
+      console.log(error);
     }
-    console.log('client', client.id, 'joined room: ' + room.name);
-    const roomMessages = await this.chatService.getAllMessagesForRoom(room.id);
-    const roomMembers = await this.chatService.getRoomMembers(room.id);
-    client.emit('roomData', { roomMessages, roomMembers });
   }
 
   // Listen for messages from the client
   @SubscribeMessage('messageFromClient')
   async handleMessage(client: any, messageObject: IMessage) {
-    console.log('Received message from client: ', client.id);
-    await this.chatService.createMessage(messageObject);
-    this.server
-      .to(messageObject.room.name)
-      .emit('messageFromServer', { id: v4(), ...messageObject });
+    try {
+      console.log('Received message from client: ', client.id);
+      await this.chatService.createMessage(messageObject);
+      this.server
+        .to(messageObject.room.name)
+        .emit('messageFromServer', { id: v4(), ...messageObject });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

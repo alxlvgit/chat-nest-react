@@ -1,12 +1,11 @@
 import { useRef } from "react";
-import { useAuth } from "../context/AuthProvider";
 import useChatActions from "../hooks/useChatActions";
 import { useAppSelector } from "../redux/hooks";
 
 const ChatForm = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { sendMessageToServer } = useChatActions();
-  const { user } = useAuth();
+  const user = useAppSelector((state) => state.authSlice.user);
   const room = useAppSelector((state) => state.chatSlice.currentRoom);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

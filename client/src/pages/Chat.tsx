@@ -5,17 +5,20 @@ import { useEffect } from "react";
 import { useAppDispatch } from "../redux/hooks";
 import { setCurrentRoom } from "../redux/features/chatSlice";
 import useChatActions from "../hooks/useChatActions";
+import { useCookies } from "react-cookie";
 
 export default function Chat() {
   const dispatch = useAppDispatch();
   const { joinRoom } = useChatActions();
+  const [cookies] = useCookies(["user"]);
+  const user = cookies["user"];
 
   // Join the last room the user was in on page load
   useEffect(() => {
     const lastPickedRoom = localStorage.getItem("currentRoom");
     if (lastPickedRoom) {
       dispatch(setCurrentRoom(JSON.parse(lastPickedRoom)));
-      joinRoom(JSON.parse(lastPickedRoom));
+      joinRoom(JSON.parse(lastPickedRoom), user);
     }
   }, []);
 

@@ -1,4 +1,4 @@
-import { IClientMessage, IRoom } from "../interfaces/interfaces";
+import { IClientMessage, IStoredRoom, IUser } from "../interfaces/interfaces";
 import socket from "../utils/socketUtil";
 
 const useChatActions = () => {
@@ -6,12 +6,13 @@ const useChatActions = () => {
     socket.emit("messageFromClient", message);
   };
 
-  const joinRoom = (room: IRoom) => {
-    socket.emit("joinRoom", room);
+  const joinRoom = (room: IStoredRoom, user: IUser) => {
+    const joinObject = { room, user };
+    socket.emit("joinRoom", joinObject);
     localStorage.setItem("currentRoom", JSON.stringify(room));
   };
 
-  const leaveRoom = (room: IRoom) => {
+  const leaveRoom = (room: IStoredRoom) => {
     socket.emit("leaveRoom", room);
   };
 

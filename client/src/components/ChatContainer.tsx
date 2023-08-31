@@ -1,13 +1,13 @@
-import { useAuth } from "../context/AuthProvider";
-import useMessages from "../hooks/useMessages";
+import useRoomData from "../hooks/useRoomData";
 import { useAppSelector } from "../redux/hooks";
 import ChatForm from "./ChatForm";
 import LogoutButton from "./LogoutButton";
 import { MessageContainer } from "./MessageContainer";
 
 const ChatContainer = () => {
-  const messages = useMessages();
-  const { user } = useAuth();
+  const messages = useRoomData();
+  const user = useAppSelector((state) => state.authSlice.user);
+
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
   const roomMembers = useAppSelector((state) => state.chatSlice.roomMembers);
 

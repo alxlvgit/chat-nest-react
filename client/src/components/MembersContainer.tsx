@@ -13,7 +13,7 @@ const MembersContainer = () => {
       <div className="members-list flex flex-col mt-8">
         {roomMembers.map((member) => (
           <div
-            key={member.id}
+            key={member.email}
             className="member flex justify-between items-center p-2"
           >
             <h1 className="">{member.firstName + " " + member.lastName}</h1>

@@ -8,7 +8,7 @@ import {
   setRoomMembers,
 } from "../redux/features/chatSlice";
 
-const useMessages = () => {
+const useRoomData = () => {
   const dispatch = useAppDispatch();
   const messages = useAppSelector((state) => state.chatSlice.messages);
 
@@ -19,9 +19,9 @@ const useMessages = () => {
     });
 
     socket.on("roomData", (roomData) => {
-      const { roomMessages, roomMembers } = roomData;
-      dispatch(setStoredMessages(roomMessages));
-      dispatch(setRoomMembers(roomMembers));
+      const { messages, participants } = roomData;
+      dispatch(setStoredMessages(messages));
+      dispatch(setRoomMembers(participants));
     });
 
     return () => {
@@ -33,4 +33,4 @@ const useMessages = () => {
   return messages;
 };
 
-export default useMessages;
+export default useRoomData;

@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  IRoom,
-  IRoomParticipant,
   IStoredMessage,
+  IStoredRoom,
+  IUser,
 } from "../../interfaces/interfaces";
 
 type ChatState = {
   messages: IStoredMessage[];
-  rooms: IRoom[];
-  currentRoom: IRoom | undefined;
+  rooms: IStoredRoom[];
+  currentRoom: IStoredRoom | undefined;
   loading: boolean;
-  roomMembers: IRoomParticipant[];
+  roomMembers: IUser[];
 };
 
 const initialState: ChatState = {
@@ -31,13 +31,13 @@ const chatSlice = createSlice({
     setStoredMessages: (state, action: PayloadAction<IStoredMessage[]>) => {
       state.messages = action.payload;
     },
-    setRooms: (state, action: PayloadAction<IRoom[]>) => {
+    setRooms: (state, action: PayloadAction<IStoredRoom[]>) => {
       state.rooms = action.payload;
     },
-    setCurrentRoom: (state, action: PayloadAction<IRoom | undefined>) => {
+    setCurrentRoom: (state, action: PayloadAction<IStoredRoom | undefined>) => {
       state.currentRoom = action.payload;
     },
-    setRoomMembers: (state, action: PayloadAction<IRoomParticipant[]>) => {
+    setRoomMembers: (state, action: PayloadAction<IUser[]>) => {
       state.roomMembers = action.payload;
     },
     resetChatState: () => initialState,

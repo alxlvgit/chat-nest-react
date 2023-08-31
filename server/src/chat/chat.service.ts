@@ -1,22 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { IMessage } from 'src/interfaces/interfaces';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly prisma: PrismaService) {}
-
-  async getAllMessagesForRoom(roomId: number) {
-    const room = await this.prisma.room.findUnique({
-      where: {
-        id: roomId,
-      },
-      include: {
-        messages: true,
-      },
-    });
-    return room.messages;
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async createMessage(message: IMessage) {
     const { content, senderName, senderEmail, room, createdAt } = message;
@@ -31,22 +23,70 @@ export class ChatService {
     });
   }
 
-  async getRooms() {
-    return await this.prisma.room.findMany();
+  async getRoomsForAuthorizedUser(token: string) {
+    try {
+      // Decode the JWT token to get user's email
+      const decodedToken = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      const userEmail = decodedToken.email;
+      const rooms = await this.getRooms(userEmail);
+      console.log(rooms);
+      return rooms;
+    } catch (error) {
+      console.log(error);
+
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 
-  async getRoomMembers(roomId: number) {
+  private async getRooms(userEmail: string) {
+    const rooms = await this.prisma.room.findMany({
+      include: {
+        participants: true,
+        creator: true,
+      },
+    });
+    const formattedRooms = rooms.map((room) => {
+      const isCreator = room.creator.email === userEmail;
+      const isMember = room.participants.some(
+        (participant) => participant.email === userEmail,
+      );
+
+      return {
+        ...room,
+        isCreator,
+        isMember,
+      };
+    });
+    return formattedRooms;
+  }
+
+  async getRoom(roomId: number) {
     const room = await this.prisma.room.findUnique({
       where: {
         id: roomId,
       },
       include: {
         participants: true,
+        messages: true,
       },
     });
-    return room.participants.map((participant) => {
-      const { id, firstName, lastName, email } = participant;
-      return { id, firstName, lastName, email };
+    return room;
+  }
+
+  async addUserToRoom(userEmail: string, roomId: number) {
+    await this.prisma.room.update({
+      where: {
+        id: roomId,
+      },
+      data: {
+        participants: {
+          connect: {
+            email: userEmail,
+          },
+        },
+      },
     });
   }
 }
