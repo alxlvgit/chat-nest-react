@@ -40,6 +40,7 @@ const chatSlice = createSlice({
     setRoomMembers: (state, action: PayloadAction<IRoomParticipant[]>) => {
       state.roomMembers = action.payload;
     },
+    resetChatState: () => initialState,
   },
 });
 
@@ -49,6 +50,7 @@ export const {
   setCurrentRoom,
   setStoredMessages,
   setRoomMembers,
+  resetChatState,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

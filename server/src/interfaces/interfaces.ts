@@ -2,7 +2,7 @@ export interface IMessage {
   content: string;
   senderName: string;
   senderEmail: string;
-  createdAt: string;
+  createdAt: number;
   room?: IRoom;
 }
 

@@ -14,7 +14,7 @@ export interface IClientMessage {
 
 export interface IStoredMessage extends IClientMessage {
   id: string;
-  createdAt: string;
+  createdAt: number;
 }
 
 export interface IUser {

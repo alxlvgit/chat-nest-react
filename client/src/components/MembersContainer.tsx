@@ -16,7 +16,7 @@ const MembersContainer = () => {
             key={member.id}
             className="member flex justify-between items-center p-2"
           >
-            <h1 className="">{member.firstName + member.lastName}</h1>
+            <h1 className="">{member.firstName + " " + member.lastName}</h1>
           </div>
         ))}
       </div>

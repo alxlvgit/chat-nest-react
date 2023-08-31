@@ -12,7 +12,7 @@ const ChatForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const content = inputRef.current!.value.trim();
-    const createdAt = new Date().toISOString();
+    const createdAt = Date.now();
     const message = {
       content,
       createdAt,

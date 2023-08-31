@@ -18,10 +18,12 @@ export class MessagesGateway
   @WebSocketServer()
   server: Server;
 
+  // Listen for connections
   async handleConnection(client: any, ...args: any[]) {
     console.log('Client connected ' + client.id);
   }
 
+  // Listen for disconnects
   handleDisconnect(client: any) {
     console.log('Client disconnected' + client.id);
   }
@@ -37,22 +39,19 @@ export class MessagesGateway
       }
       client.join(room.name);
     }
-    console.log(client.rooms, 'joined room: ' + room.name);
+    console.log('client', client.id, 'joined room: ' + room.name);
     const roomMessages = await this.chatService.getAllMessagesForRoom(room.id);
     const roomMembers = await this.chatService.getRoomMembers(room.id);
-    console.log(roomMembers);
-
     client.emit('roomData', { roomMessages, roomMembers });
   }
 
   // Listen for messages from the client
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage('messageFromClient')
   async handleMessage(client: any, messageObject: IMessage) {
-    console.log('Received message from client: ', client.id, messageObject);
+    console.log('Received message from client: ', client.id);
     await this.chatService.createMessage(messageObject);
-    console.log('emmiting message to room' + messageObject.room.name);
     this.server
       .to(messageObject.room.name)
-      .emit('message', { id: v4(), ...messageObject });
+      .emit('messageFromServer', { id: v4(), ...messageObject });
   }
 }

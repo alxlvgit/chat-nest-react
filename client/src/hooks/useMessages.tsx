@@ -14,7 +14,7 @@ const useMessages = () => {
 
   // Listen for new messages and all messages on initial load
   useEffect(() => {
-    socket.on("message", (message: IStoredMessage) => {
+    socket.on("messageFromServer", (message: IStoredMessage) => {
       dispatch(addMessage(message));
     });
 
@@ -25,7 +25,7 @@ const useMessages = () => {
     });
 
     return () => {
-      socket.off("message");
+      socket.off("messageFromServer");
       socket.off("roomData");
     };
   }, [socket]);

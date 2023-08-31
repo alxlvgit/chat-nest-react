@@ -7,6 +7,8 @@ import {
 } from "react";
 import { useCookies } from "react-cookie";
 import { AuthContextInterface, IUser } from "../interfaces/interfaces";
+import { resetChatState } from "../redux/features/chatSlice";
+import { useAppDispatch } from "../redux/hooks";
 
 const TOKEN_KEY = "jwtToken";
 const USER_KEY = "user";
@@ -16,6 +18,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [cookies, setCookie, removeCookie] = useCookies([TOKEN_KEY, USER_KEY]);
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<IUser | null>(null);
+  const dispatch = useAppDispatch();
 
   // Check if token and user exists in cookies on initial load
   useEffect(() => {
@@ -39,6 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     removeCookie(TOKEN_KEY, { path: "/" });
     removeCookie(USER_KEY, { path: "/" });
+    localStorage.removeItem("currentRoom");
+    dispatch(resetChatState());
     setAuthenticated(false);
   };
 

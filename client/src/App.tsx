@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
+
 function App() {
   function AppRoutes() {
     const { authenticated } = useAuth();
@@ -16,17 +17,13 @@ function App() {
           <>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Navigate to="/login" />} />
           </>
-        ) : null}
-        {authenticated ? (
+        ) : (
           <>
             <Route path="/" element={<Chat />} />
             <Route path="/login" element={<Navigate to="/" />} />
             <Route path="/register" element={<Navigate to="/" />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Navigate to="/login" />} />
           </>
         )}
       </Routes>

@@ -25,14 +25,24 @@ const ChatContainer = () => {
         <LogoutButton />
       </div>
       <div className="flex p-4 flex-col flex-grow overflow-y-auto">
-        {messages.map((message) => (
-          <MessageContainer
-            key={message.id}
-            incomingMessage={message.senderEmail !== user?.email}
-            textContent={message.content}
-            sender={message.senderName}
-          />
-        ))}
+        {!currentRoom ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <h1 className="text-2xl font-bold">Welcome to Chat App! </h1>
+            <p className="text-lg font-bold">
+              Please select a room to start chatting
+            </p>
+          </div>
+        ) : (
+          messages.map((message) => (
+            <MessageContainer
+              key={message.id}
+              incomingMessage={message.senderEmail !== user?.email}
+              textContent={message.content}
+              sender={message.senderName}
+              createdAt={message.createdAt}
+            />
+          ))
+        )}
       </div>
       <div className="chatInput sticky bottom-0 w-3/4 m-auto border-gray-800 mb-4">
         <ChatForm></ChatForm>

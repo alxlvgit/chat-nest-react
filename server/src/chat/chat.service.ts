@@ -25,7 +25,7 @@ export class ChatService {
         content,
         senderName,
         senderEmail,
-        createdAt,
+        createdAt: new Date(createdAt),
         roomId: room.id,
       },
     });
