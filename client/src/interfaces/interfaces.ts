@@ -9,7 +9,7 @@ export interface IClientMessage {
   content: string;
   senderName: string;
   senderEmail: string;
-  room: IStoredRoom | undefined;
+  room: IRoom | undefined;
 }
 
 export interface IStoredMessage extends IClientMessage {
@@ -35,14 +35,15 @@ export interface ISignUpRequest {
   lastName: string;
 }
 
-export interface IStoredRoom {
+export interface IRoom {
   id: number;
   name: string;
+  isMember: boolean;
+}
+
+export interface IStoredRoom extends IRoom {
   messages: IStoredMessage[];
   participants: IUser[];
-  creator: IUser;
-  isCreator: boolean;
-  isMember: boolean;
 }
 
 export interface ICreateRoomRequest {

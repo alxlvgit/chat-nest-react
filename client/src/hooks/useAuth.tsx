@@ -32,7 +32,6 @@ const useAuthActions = () => {
   const logoutUser = () => {
     removeCookie(TOKEN_KEY, { path: "/" });
     removeCookie(USER_KEY, { path: "/" });
-    localStorage.removeItem("currentRoom");
     dispatch(resetChatState());
     dispatch(setLoggedOut());
   };

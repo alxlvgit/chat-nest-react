@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  IRoom,
   IStoredMessage,
   IStoredRoom,
   IUser,
@@ -8,8 +9,7 @@ import {
 type ChatState = {
   messages: IStoredMessage[];
   rooms: IStoredRoom[];
-  currentRoom: IStoredRoom | undefined;
-  loading: boolean;
+  currentRoom: IRoom | undefined;
   roomMembers: IUser[];
 };
 
@@ -17,7 +17,6 @@ const initialState: ChatState = {
   messages: [],
   rooms: [],
   currentRoom: undefined,
-  loading: false,
   roomMembers: [],
 };
 
@@ -34,13 +33,24 @@ const chatSlice = createSlice({
     setRooms: (state, action: PayloadAction<IStoredRoom[]>) => {
       state.rooms = action.payload;
     },
-    setCurrentRoom: (state, action: PayloadAction<IStoredRoom | undefined>) => {
+    updateRooms: (state, action: PayloadAction<IStoredRoom>) => {
+      const roomIndex = state.rooms.findIndex(
+        (room) => room.id === action.payload.id
+      );
+      state.rooms[roomIndex] = action.payload;
+    },
+    setCurrentRoom: (state, action: PayloadAction<IRoom | undefined>) => {
       state.currentRoom = action.payload;
     },
     setRoomMembers: (state, action: PayloadAction<IUser[]>) => {
       state.roomMembers = action.payload;
     },
     resetChatState: () => initialState,
+    resetRoomState: (state) => {
+      state.messages = [];
+      state.currentRoom = undefined;
+      state.roomMembers = [];
+    },
   },
 });
 
@@ -51,6 +61,8 @@ export const {
   setStoredMessages,
   setRoomMembers,
   resetChatState,
+  updateRooms,
+  resetRoomState,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

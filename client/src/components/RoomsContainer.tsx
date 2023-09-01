@@ -1,22 +1,28 @@
 import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
 import useChatRooms from "../hooks/useChatRooms";
-import { IStoredRoom } from "../interfaces/interfaces";
-import { setCurrentRoom } from "../redux/features/chatSlice";
+import { IRoom } from "../interfaces/interfaces";
+import { resetRoomState, setCurrentRoom } from "../redux/features/chatSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import Room from "./Room";
 
 const RoomsContainer = () => {
   const { chatRooms } = useChatRooms();
-  const { joinRoom } = useChatActions();
+  const { enterRoom } = useChatActions();
   const dispatch = useAppDispatch();
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
   const [cookies] = useCookies(["user"]);
   const user = cookies["user"];
 
-  const handleRoomClick = (room: IStoredRoom) => {
-    currentRoom?.id !== room.id && joinRoom(room, user);
-    dispatch(setCurrentRoom(room));
+  const handleRoomClick = (room: IRoom) => {
+    const isMember = room.isMember;
+    if (!isMember) {
+      dispatch(resetRoomState());
+      dispatch(setCurrentRoom(room));
+    } else {
+      dispatch(setCurrentRoom(room));
+      currentRoom?.id !== room.id && enterRoom(room, user);
+    }
   };
 
   return (
@@ -28,9 +34,6 @@ const RoomsContainer = () => {
             name={room.name}
             onClick={() => handleRoomClick(room)}
             isActive={room.id === currentRoom?.id}
-            isCreator={room.isCreator}
-            isMember={room.isMember}
-            // onSendRequest={() => joinRoom(room, user)}
           ></Room>
         ))}
       </div>

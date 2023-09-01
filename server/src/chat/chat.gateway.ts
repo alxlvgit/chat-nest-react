@@ -28,35 +28,73 @@ export class MessagesGateway
     console.log('Client disconnected' + client.id);
   }
 
+  // Check if the user is a member of the room
+  private checkIfRoomMember = async (roomId: number, userEmail: string) => {
+    const storedRoom = await this.chatService.getRoom(roomId, userEmail);
+    const isRoomMember = storedRoom.participants.some(
+      (participant) => participant.email === userEmail,
+    );
+    const { messages, participants } = storedRoom;
+    return { isRoomMember, messages, participants };
+  };
+
+  // Leave the room the user is currently in
+  private leavePreviouslyEnteredRoom = async (client: any) => {
+    const [currentRoom] = client.rooms;
+    if (currentRoom) {
+      client.leave(currentRoom);
+    }
+  };
+
+  // Add the user to the room
+  private addUserToRoom = async (
+    userEmail: string,
+    roomId: number,
+    client: any,
+  ) => {
+    await this.chatService.addUserToRoom(userEmail, roomId);
+    const updatedRoom = await this.chatService.getRoom(roomId, userEmail);
+    client.emit('joinedNewRoom', updatedRoom);
+  };
+
   // Listen for requests to join a room
-  // Refactor this later
-  @SubscribeMessage('joinRoom')
-  async handleJoiningTheRoom(
+  @SubscribeMessage('requestJoinRoom')
+  async handleJoinRequest(
     client: any,
     joinObject: { user: IUser; room: IRoom },
   ) {
     try {
       const { user, room } = joinObject;
-      const storedRoom = await this.chatService.getRoom(room.id);
-      const previouslyVisitedRooms = client.rooms.has(room.name);
-      const isRoomMember = storedRoom.participants.some(
-        (participant) => participant.email === user.email,
-      );
-      // If the user is not a member of the room, add them to the room
-      if (!isRoomMember) {
-        await this.chatService.addUserToRoom(user.email, room.id);
+      const { isRoomMember, messages, participants } =
+        await this.checkIfRoomMember(room.id, user.email);
+      if (isRoomMember) {
+        console.log('client', client.id, 'is already a member of the room');
+        return;
       }
-      // If the user has visited other rooms, leave them
-      if (!previouslyVisitedRooms) {
-        const [currentRoom] = client.rooms;
-        if (currentRoom) {
-          client.leave(currentRoom);
-        }
-        client.join(room.name);
-      }
-      console.log('client', client.id, 'joined room: ' + room.name);
-      const { messages, participants } = storedRoom;
+      await this.addUserToRoom(user.email, room.id, client);
+      this.leavePreviouslyEnteredRoom(client);
+      client.join(room.name);
       client.emit('roomData', { messages, participants });
+      console.log('client', client.id, 'joined new room: ' + room.name);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Listen for requests to enter a room
+  @SubscribeMessage('enterRoom')
+  async handleEnteringTheRoom(client: any, data: { user: IUser; room: IRoom }) {
+    try {
+      const { user, room } = data;
+      const { isRoomMember, messages, participants } =
+        await this.checkIfRoomMember(room.id, user.email);
+      if (!isRoomMember) {
+        throw new Error('User is not a member of the room');
+      }
+      this.leavePreviouslyEnteredRoom(client);
+      client.join(room.name);
+      client.emit('roomData', { messages, participants });
+      console.log('client', client.id, 'entered room: ' + room.name);
     } catch (error) {
       console.log(error);
     }

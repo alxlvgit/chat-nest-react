@@ -10,71 +10,99 @@ export class ChatService {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Create a new message
   async createMessage(message: IMessage) {
     const { content, senderName, senderEmail, room, createdAt } = message;
+    const data = {
+      content,
+      senderName,
+      senderEmail,
+      createdAt: new Date(createdAt),
+      roomId: room.id,
+    };
     await this.prisma.message.create({
-      data: {
-        content,
-        senderName,
-        senderEmail,
-        createdAt: new Date(createdAt),
-        roomId: room.id,
-      },
+      data,
     });
   }
 
-  async getRoomsForAuthorizedUser(token: string) {
+  // Get all rooms and verify the user
+  async getRoomsForUser(token: string) {
     try {
-      // Decode the JWT token to get user's email
       const decodedToken = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
       const userEmail = decodedToken.email;
       const rooms = await this.getRooms(userEmail);
-      console.log(rooms);
       return rooms;
     } catch (error) {
       console.log(error);
-
       throw new UnauthorizedException('Invalid token');
     }
   }
 
+  // Get all rooms
   private async getRooms(userEmail: string) {
-    const rooms = await this.prisma.room.findMany({
-      include: {
-        participants: true,
-        creator: true,
+    const include = {
+      participants: {
+        select: {
+          email: true,
+        },
       },
+      creator: {
+        select: {
+          email: true,
+        },
+      },
+    };
+    const rooms = await this.prisma.room.findMany({
+      include: include,
     });
     const formattedRooms = rooms.map((room) => {
-      const isCreator = room.creator.email === userEmail;
-      const isMember = room.participants.some(
-        (participant) => participant.email === userEmail,
-      );
-
-      return {
-        ...room,
-        isCreator,
-        isMember,
-      };
+      return this.formatRoom(room, userEmail);
     });
     return formattedRooms;
   }
 
-  async getRoom(roomId: number) {
+  // Format the room data
+  private formatRoom = (room, userEmail) => {
+    const isMember = room.participants.some(
+      (participant) => participant.email === userEmail,
+    );
+    return {
+      id: room.id,
+      name: room.name,
+      isMember,
+    };
+  };
+
+  // Get a single room
+  async getRoom(roomId: number, userEmail: string) {
+    const include = {
+      participants: {
+        select: {
+          email: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+      messages: true,
+    };
     const room = await this.prisma.room.findUnique({
       where: {
         id: roomId,
       },
-      include: {
-        participants: true,
-        messages: true,
-      },
+      include: include,
     });
-    return room;
+    const isMember = room.participants.some(
+      (participant) => participant.email === userEmail,
+    );
+    return {
+      ...room,
+      isMember,
+    };
   }
 
+  // Add a user to a room
   async addUserToRoom(userEmail: string, roomId: number) {
     await this.prisma.room.update({
       where: {

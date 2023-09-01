@@ -9,8 +9,7 @@ export class ChatController {
   @Get('rooms')
   async getRooms(@Req() request: Request) {
     const token = request.headers.authorization;
-    console.log(token, 'token');
     const jwtToken = token.split(' ')[1];
-    return await this.chatService.getRoomsForAuthorizedUser(jwtToken);
+    return await this.chatService.getRoomsForUser(jwtToken);
   }
 }

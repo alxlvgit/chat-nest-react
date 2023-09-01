@@ -1,36 +1,40 @@
 import { useEffect } from "react";
-import { IStoredMessage } from "../interfaces/interfaces";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { IStoredMessage, IStoredRoom } from "../interfaces/interfaces";
+import { useAppDispatch } from "../redux/hooks";
 import socket from "../utils/socketUtil";
 import {
   addMessage,
   setStoredMessages,
   setRoomMembers,
+  updateRooms,
+  setCurrentRoom,
 } from "../redux/features/chatSlice";
 
 const useRoomData = () => {
   const dispatch = useAppDispatch();
-  const messages = useAppSelector((state) => state.chatSlice.messages);
 
-  // Listen for new messages and all messages on initial load
   useEffect(() => {
     socket.on("messageFromServer", (message: IStoredMessage) => {
       dispatch(addMessage(message));
     });
 
-    socket.on("roomData", (roomData) => {
+    socket.on("roomData", (roomData: IStoredRoom) => {
       const { messages, participants } = roomData;
       dispatch(setStoredMessages(messages));
       dispatch(setRoomMembers(participants));
     });
 
+    socket.on("joinedNewRoom", (updatedRoomFromServer: IStoredRoom) => {
+      dispatch(updateRooms(updatedRoomFromServer));
+      dispatch(setCurrentRoom(updatedRoomFromServer));
+    });
+
     return () => {
       socket.off("messageFromServer");
       socket.off("roomData");
+      socket.off("joinedNewRoom");
     };
   }, [socket]);
-
-  return messages;
 };
 
 export default useRoomData;

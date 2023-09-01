@@ -9,13 +9,15 @@ const useChatRooms = () => {
 
   const { data, error, isLoading } = useGetRoomsQuery("");
 
+  // Fetch chat rooms from server
   useEffect(() => {
     if (data && !error && !isLoading) {
       dispatch(setRooms(data));
+      // console.log(data, "Fetched chat rooms");
     } else if (error) {
       console.error("Failed to fetch chat rooms:", error);
     }
-  }, [data, error, isLoading]);
+  }, [data, error, isLoading, dispatch]);
 
   return { chatRooms };
 };

@@ -9,6 +9,7 @@ import { RootState } from "../redux/store";
 export const chatAPI = createApi({
   reducerPath: "chatAPI",
   tagTypes: ["Chat"],
+  refetchOnMountOrArgChange: true,
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_CHAT_API_URL || "http://localhost:3000/chat/",
     prepareHeaders: (headers, { getState }) => {
