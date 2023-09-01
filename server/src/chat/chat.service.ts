@@ -48,11 +48,6 @@ export class ChatService {
           email: true,
         },
       },
-      creator: {
-        select: {
-          email: true,
-        },
-      },
     };
     const rooms = await this.prisma.room.findMany({
       include: include,

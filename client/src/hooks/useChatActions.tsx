@@ -12,8 +12,8 @@ const useChatActions = () => {
   };
 
   const requestToJoinRoom = (room: IRoom, user: IUser) => {
-    const data = { room, user };
-    socket.emit("requestJoinRoom", data);
+    const joinRequestData = { room, user };
+    socket.emit("requestJoinRoom", joinRequestData);
   };
 
   const leaveRoom = (room: IRoom) => {

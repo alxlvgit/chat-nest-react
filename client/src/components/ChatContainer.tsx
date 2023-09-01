@@ -12,8 +12,8 @@ const ChatContainer = () => {
   const user = cookies["user"];
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
   const roomMembers = useAppSelector((state) => state.chatSlice.roomMembers);
-  const { requestToJoinRoom } = useChatActions();
   const messages = useAppSelector((state) => state.chatSlice.messages);
+  const { requestToJoinRoom } = useChatActions();
   const isMember = currentRoom?.isMember;
 
   return (
@@ -23,7 +23,7 @@ const ChatContainer = () => {
           <div className="members-list flex flex-col items-start">
             <h1 className="text-lg font-bold">{currentRoom?.name}</h1>
             <p className="text-xs text-gray-500 font-bold">
-              Members: {roomMembers.length}
+              {isMember && `Members: ${roomMembers.length}`}
             </p>
           </div>
         )}
@@ -45,7 +45,7 @@ const ChatContainer = () => {
             </h1>
             <button
               onClick={() => requestToJoinRoom(currentRoom, user)}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-5 rounded"
             >
               Join Room
             </button>

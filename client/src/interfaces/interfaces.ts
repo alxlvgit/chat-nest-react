@@ -44,6 +44,7 @@ export interface IRoom {
 export interface IStoredRoom extends IRoom {
   messages: IStoredMessage[];
   participants: IUser[];
+  creatorId: number;
 }
 
 export interface ICreateRoomRequest {

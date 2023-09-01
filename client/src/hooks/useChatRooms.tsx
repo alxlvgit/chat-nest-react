@@ -13,7 +13,6 @@ const useChatRooms = () => {
   useEffect(() => {
     if (data && !error && !isLoading) {
       dispatch(setRooms(data));
-      // console.log(data, "Fetched chat rooms");
     } else if (error) {
       console.error("Failed to fetch chat rooms:", error);
     }
