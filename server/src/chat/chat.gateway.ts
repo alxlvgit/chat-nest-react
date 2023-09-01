@@ -6,7 +6,7 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { IMessage, IRoom, IUser } from 'src/interfaces/interfaces';
+import { IMessage, IRoom, IStoredRoom, IUser } from 'src/interfaces/interfaces';
 import { v4 } from 'uuid';
 import { ChatService } from './chat.service';
 
@@ -28,53 +28,54 @@ export class MessagesGateway
     console.log('Client disconnected' + client.id);
   }
 
-  // Check if the user is a member of the room
-  private checkIfRoomMember = async (roomId: number, userEmail: string) => {
-    const storedRoom = await this.chatService.getRoom(roomId, userEmail);
-    const isRoomMember = storedRoom.participants.some(
-      (participant) => participant.email === userEmail,
-    );
-    const { messages, participants } = storedRoom;
-    return { isRoomMember, messages, participants };
-  };
-
   // Leave the room the user is currently in
-  private leavePreviouslyEnteredRoom = async (client: any) => {
+  private leavePreviouslyEnteredRoom = (client: any) => {
     const [currentRoom] = client.rooms;
     if (currentRoom) {
       client.leave(currentRoom);
     }
   };
 
-  // Add the user to the room
-  private addUserToRoom = async (
+  // Enter new room
+  private enterNewRoom = (
+    client: any,
+    roomName: string,
+    roomData: IStoredRoom,
+  ) => {
+    client.join(roomName);
+    client.emit('roomData', roomData);
+  };
+
+  // Add the user to the room, enter new room, and notify other members
+  private addNewMemberToRoom = async (
     userEmail: string,
     roomId: number,
     client: any,
   ) => {
     await this.chatService.addUserToRoom(userEmail, roomId);
-    const updatedRoom = await this.chatService.getRoom(roomId, userEmail);
-    client.emit('joinedNewRoom', updatedRoom);
+    const newRoomForClient = await this.chatService.getRoom(roomId, userEmail);
+    this.leavePreviouslyEnteredRoom(client);
+    client.emit('successfullyJoinedNewRoom', newRoomForClient);
+    const { participants } = newRoomForClient;
+    this.server.to(newRoomForClient.name).emit('newMemberInRoom', participants);
+    this.enterNewRoom(client, newRoomForClient.name, newRoomForClient);
   };
 
   // Listen for requests to join a room
   @SubscribeMessage('requestJoinRoom')
   async handleJoinRequest(
     client: any,
-    joinObject: { user: IUser; room: IRoom },
+    joinRequestData: { user: IUser; room: IRoom },
   ) {
     try {
-      const { user, room } = joinObject;
-      const { isRoomMember, messages, participants } =
-        await this.checkIfRoomMember(room.id, user.email);
-      if (isRoomMember) {
+      const { user, room } = joinRequestData;
+      const storedRoom = await this.chatService.getRoom(room.id, user.email);
+      const { isMember } = storedRoom;
+      if (isMember) {
         console.log('client', client.id, 'is already a member of the room');
         return;
       }
-      await this.addUserToRoom(user.email, room.id, client);
-      this.leavePreviouslyEnteredRoom(client);
-      client.join(room.name);
-      client.emit('roomData', { messages, participants });
+      await this.addNewMemberToRoom(user.email, room.id, client);
       console.log('client', client.id, 'joined new room: ' + room.name);
     } catch (error) {
       console.log(error);
@@ -86,14 +87,13 @@ export class MessagesGateway
   async handleEnteringTheRoom(client: any, data: { user: IUser; room: IRoom }) {
     try {
       const { user, room } = data;
-      const { isRoomMember, messages, participants } =
-        await this.checkIfRoomMember(room.id, user.email);
-      if (!isRoomMember) {
+      const storedRoom = await this.chatService.getRoom(room.id, user.email);
+      const { isMember } = storedRoom;
+      if (!isMember) {
         throw new Error('User is not a member of the room');
       }
       this.leavePreviouslyEnteredRoom(client);
-      client.join(room.name);
-      client.emit('roomData', { messages, participants });
+      this.enterNewRoom(client, room.name, storedRoom);
       console.log('client', client.id, 'entered room: ' + room.name);
     } catch (error) {
       console.log(error);

@@ -2,12 +2,11 @@ export interface IMessage {
   content: string;
   senderName: string;
   senderEmail: string;
-  createdAt: number;
+  createdAt: Date;
   room?: IRoom;
 }
 
 export interface IUser {
-  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -16,7 +15,11 @@ export interface IUser {
 export interface IRoom {
   id: number;
   name: string;
+  isMember: boolean;
+}
+
+export interface IStoredRoom extends IRoom {
   messages: IMessage[];
   participants: IUser[];
-  creator: IUser;
+  creatorId: number;
 }

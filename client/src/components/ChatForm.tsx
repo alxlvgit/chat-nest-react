@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
 import { useAppSelector } from "../redux/hooks";
@@ -10,25 +10,28 @@ const ChatForm = () => {
   const user = cookies["user"];
   const room = useAppSelector((state) => state.chatSlice.currentRoom);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const content = inputRef.current!.value.trim();
-    const createdAt = Date.now();
-    const message = {
-      content,
-      createdAt,
-      senderEmail: user!.email,
-      senderName: user!.firstName,
-      room,
-    };
-    if (content.length > 0 && room) {
-      sendMessageToServer(message);
-      inputRef.current!.value = "";
-    } else {
-      console.log("No room selected or message is empty");
-      inputRef.current!.value = "";
-    }
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const content = inputRef.current!.value.trim();
+      const createdAt = Date.now();
+      const message = {
+        content,
+        createdAt,
+        senderEmail: user!.email,
+        senderName: user!.firstName,
+        room,
+      };
+      if (content.length > 0 && room) {
+        sendMessageToServer(message);
+        inputRef.current!.value = "";
+      } else {
+        console.log("No room selected or message is empty");
+        inputRef.current!.value = "";
+      }
+    },
+    [inputRef, sendMessageToServer, user, room]
+  );
 
   return (
     <div className="chat-form flex justify-center items-center">

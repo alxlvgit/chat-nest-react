@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { IStoredMessage, IStoredRoom } from "../interfaces/interfaces";
+import { IRoom, IStoredMessage, IStoredRoom } from "../interfaces/interfaces";
 import { useAppDispatch } from "../redux/hooks";
 import socket from "../utils/socketUtil";
 import {
@@ -24,9 +24,14 @@ const useRoomData = () => {
       dispatch(setRoomMembers(participants));
     });
 
-    socket.on("joinedNewRoom", (updatedRoomFromServer: IStoredRoom) => {
-      dispatch(updateRooms(updatedRoomFromServer));
-      dispatch(setCurrentRoom(updatedRoomFromServer));
+    socket.on("successfullyJoinedNewRoom", (newRoom: IStoredRoom) => {
+      const { id, name, isMember } = newRoom;
+      dispatch(updateRooms(newRoom));
+      dispatch(setCurrentRoom({ id, name, isMember } as IRoom));
+    });
+
+    socket.on("newMemberInRoom", (participants) => {
+      dispatch(setRoomMembers(participants));
     });
 
     return () => {
