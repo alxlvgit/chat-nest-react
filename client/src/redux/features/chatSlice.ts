@@ -1,23 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   IRoom,
-  IRoomParticipant,
   IStoredMessage,
+  IStoredRoom,
+  IUser,
 } from "../../interfaces/interfaces";
 
 type ChatState = {
   messages: IStoredMessage[];
-  rooms: IRoom[];
+  rooms: IStoredRoom[];
   currentRoom: IRoom | undefined;
-  loading: boolean;
-  roomMembers: IRoomParticipant[];
+  roomMembers: IUser[];
 };
 
 const initialState: ChatState = {
   messages: [],
   rooms: [],
   currentRoom: undefined,
-  loading: false,
   roomMembers: [],
 };
 
@@ -31,14 +30,26 @@ const chatSlice = createSlice({
     setStoredMessages: (state, action: PayloadAction<IStoredMessage[]>) => {
       state.messages = action.payload;
     },
-    setRooms: (state, action: PayloadAction<IRoom[]>) => {
+    setRooms: (state, action: PayloadAction<IStoredRoom[]>) => {
       state.rooms = action.payload;
+    },
+    updateRooms: (state, action: PayloadAction<IStoredRoom>) => {
+      const roomIndex = state.rooms.findIndex(
+        (room) => room.id === action.payload.id
+      );
+      state.rooms[roomIndex] = action.payload;
     },
     setCurrentRoom: (state, action: PayloadAction<IRoom | undefined>) => {
       state.currentRoom = action.payload;
     },
-    setRoomMembers: (state, action: PayloadAction<IRoomParticipant[]>) => {
+    setRoomMembers: (state, action: PayloadAction<IUser[]>) => {
       state.roomMembers = action.payload;
+    },
+    resetChatState: () => initialState,
+    resetRoomState: (state) => {
+      state.messages = [];
+      state.currentRoom = undefined;
+      state.roomMembers = [];
     },
   },
 });
@@ -49,6 +60,9 @@ export const {
   setCurrentRoom,
   setStoredMessages,
   setRoomMembers,
+  resetChatState,
+  updateRooms,
+  resetRoomState,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

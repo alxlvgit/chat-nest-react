@@ -1,13 +1,13 @@
 import { Formik, Form, Field } from "formik";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
 import { useLoginMutation } from "../services/auth.service";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import useAuthActions from "../hooks/useAuth";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { loginUser } = useAuth();
+  const { loginUser } = useAuthActions();
   const [login, { data, error }] = useLoginMutation();
 
   const initialValues = {

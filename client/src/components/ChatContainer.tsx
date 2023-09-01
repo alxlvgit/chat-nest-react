@@ -1,15 +1,20 @@
-import { useAuth } from "../context/AuthProvider";
-import useMessages from "../hooks/useMessages";
+import { useCookies } from "react-cookie";
+import useChatActions from "../hooks/useChatActions";
+import useRoomData from "../hooks/useRoomData";
 import { useAppSelector } from "../redux/hooks";
 import ChatForm from "./ChatForm";
 import LogoutButton from "./LogoutButton";
 import { MessageContainer } from "./MessageContainer";
 
 const ChatContainer = () => {
-  const messages = useMessages();
-  const { user } = useAuth();
+  useRoomData();
+  const [cookies] = useCookies(["user"]);
+  const user = cookies["user"];
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
   const roomMembers = useAppSelector((state) => state.chatSlice.roomMembers);
+  const { requestToJoinRoom } = useChatActions();
+  const messages = useAppSelector((state) => state.chatSlice.messages);
+  const isMember = currentRoom?.isMember;
 
   return (
     <div className="chatContainer flex flex-col w-full h-full relative">
@@ -25,14 +30,50 @@ const ChatContainer = () => {
         <LogoutButton />
       </div>
       <div className="flex p-4 flex-col flex-grow overflow-y-auto">
-        {messages.map((message) => (
-          <MessageContainer
-            key={message.id}
-            incomingMessage={message.senderEmail !== user?.email}
-            textContent={message.content}
-            sender={message.senderName}
-          />
-        ))}
+        {!currentRoom && (
+          <div className="flex flex-col items-center justify-center h-full">
+            <h1 className="text-2xl font-bold">Welcome to Chat App! </h1>
+            <p className="text-lg font-bold">
+              Please select a room to start chatting
+            </p>
+          </div>
+        )}
+        {user && currentRoom && !isMember && (
+          <div className="flex flex-col items-center justify-center h-full">
+            <h1 className="text-2xl font-bold">
+              You are not a member of this room
+            </h1>
+            <button
+              onClick={() => requestToJoinRoom(currentRoom, user)}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Join Room
+            </button>
+          </div>
+        )}
+        {user &&
+          currentRoom &&
+          isMember &&
+          (messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <h1 className="text-2xl font-bold">
+                There are no messages in this room
+              </h1>
+              <p className="text-lg font-bold">
+                Please send a message to start chatting
+              </p>
+            </div>
+          ) : (
+            messages.map((message) => (
+              <MessageContainer
+                key={message.id}
+                incomingMessage={message.senderEmail !== user?.email}
+                textContent={message.content}
+                sender={message.senderName}
+                createdAt={message.createdAt}
+              />
+            ))
+          ))}
       </div>
       <div className="chatInput sticky bottom-0 w-3/4 m-auto border-gray-800 mb-4">
         <ChatForm></ChatForm>

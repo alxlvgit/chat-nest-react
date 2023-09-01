@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authAPI } from "../services/auth.service";
 import { chatAPI } from "../services/chat.service";
 import chatSlice from "./features/chatSlice";
+import authSlice from "./features/authSlice";
 
 export const store = configureStore({
   reducer: {
     [authAPI.reducerPath]: authAPI.reducer,
     [chatAPI.reducerPath]: chatAPI.reducer,
-    chatSlice
+    chatSlice,
+    authSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authAPI.middleware, chatAPI.middleware),

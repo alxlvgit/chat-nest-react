@@ -1,18 +1,19 @@
 import { useRef } from "react";
-import { useAuth } from "../context/AuthProvider";
+import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
 import { useAppSelector } from "../redux/hooks";
 
 const ChatForm = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { sendMessageToServer } = useChatActions();
-  const { user } = useAuth();
+  const [cookies] = useCookies(["user"]);
+  const user = cookies["user"];
   const room = useAppSelector((state) => state.chatSlice.currentRoom);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const content = inputRef.current!.value.trim();
-    const createdAt = new Date().toISOString();
+    const createdAt = Date.now();
     const message = {
       content,
       createdAt,

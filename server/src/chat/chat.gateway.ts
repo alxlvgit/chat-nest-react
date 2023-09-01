@@ -6,7 +6,7 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { IMessage, IRoom } from 'src/interfaces/interfaces';
+import { IMessage, IRoom, IUser } from 'src/interfaces/interfaces';
 import { v4 } from 'uuid';
 import { ChatService } from './chat.service';
 
@@ -18,41 +18,99 @@ export class MessagesGateway
   @WebSocketServer()
   server: Server;
 
+  // Listen for connections
   async handleConnection(client: any, ...args: any[]) {
     console.log('Client connected ' + client.id);
   }
 
+  // Listen for disconnects
   handleDisconnect(client: any) {
     console.log('Client disconnected' + client.id);
   }
 
-  // Listen for requests to join a room
-  @SubscribeMessage('joinRoom')
-  async handleJoiningTheRoom(client: any, room: IRoom) {
-    const alreadyJoinedRoom = client.rooms.has(room.name);
-    if (!alreadyJoinedRoom) {
-      const [currentRoom] = client.rooms;
-      if (currentRoom) {
-        client.leave(currentRoom);
-      }
-      client.join(room.name);
-    }
-    console.log(client.rooms, 'joined room: ' + room.name);
-    const roomMessages = await this.chatService.getAllMessagesForRoom(room.id);
-    const roomMembers = await this.chatService.getRoomMembers(room.id);
-    console.log(roomMembers);
+  // Check if the user is a member of the room
+  private checkIfRoomMember = async (roomId: number, userEmail: string) => {
+    const storedRoom = await this.chatService.getRoom(roomId, userEmail);
+    const isRoomMember = storedRoom.participants.some(
+      (participant) => participant.email === userEmail,
+    );
+    const { messages, participants } = storedRoom;
+    return { isRoomMember, messages, participants };
+  };
 
-    client.emit('roomData', { roomMessages, roomMembers });
+  // Leave the room the user is currently in
+  private leavePreviouslyEnteredRoom = async (client: any) => {
+    const [currentRoom] = client.rooms;
+    if (currentRoom) {
+      client.leave(currentRoom);
+    }
+  };
+
+  // Add the user to the room
+  private addUserToRoom = async (
+    userEmail: string,
+    roomId: number,
+    client: any,
+  ) => {
+    await this.chatService.addUserToRoom(userEmail, roomId);
+    const updatedRoom = await this.chatService.getRoom(roomId, userEmail);
+    client.emit('joinedNewRoom', updatedRoom);
+  };
+
+  // Listen for requests to join a room
+  @SubscribeMessage('requestJoinRoom')
+  async handleJoinRequest(
+    client: any,
+    joinObject: { user: IUser; room: IRoom },
+  ) {
+    try {
+      const { user, room } = joinObject;
+      const { isRoomMember, messages, participants } =
+        await this.checkIfRoomMember(room.id, user.email);
+      if (isRoomMember) {
+        console.log('client', client.id, 'is already a member of the room');
+        return;
+      }
+      await this.addUserToRoom(user.email, room.id, client);
+      this.leavePreviouslyEnteredRoom(client);
+      client.join(room.name);
+      client.emit('roomData', { messages, participants });
+      console.log('client', client.id, 'joined new room: ' + room.name);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Listen for requests to enter a room
+  @SubscribeMessage('enterRoom')
+  async handleEnteringTheRoom(client: any, data: { user: IUser; room: IRoom }) {
+    try {
+      const { user, room } = data;
+      const { isRoomMember, messages, participants } =
+        await this.checkIfRoomMember(room.id, user.email);
+      if (!isRoomMember) {
+        throw new Error('User is not a member of the room');
+      }
+      this.leavePreviouslyEnteredRoom(client);
+      client.join(room.name);
+      client.emit('roomData', { messages, participants });
+      console.log('client', client.id, 'entered room: ' + room.name);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // Listen for messages from the client
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage('messageFromClient')
   async handleMessage(client: any, messageObject: IMessage) {
-    console.log('Received message from client: ', client.id, messageObject);
-    await this.chatService.createMessage(messageObject);
-    console.log('emmiting message to room' + messageObject.room.name);
-    this.server
-      .to(messageObject.room.name)
-      .emit('message', { id: v4(), ...messageObject });
+    try {
+      console.log('Received message from client: ', client.id);
+      await this.chatService.createMessage(messageObject);
+      this.server
+        .to(messageObject.room.name)
+        .emit('messageFromServer', { id: v4(), ...messageObject });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

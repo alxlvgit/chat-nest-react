@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { Request } from 'express';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('rooms')
-  async getRooms() {
-    return await this.chatService.getRooms();
+  async getRooms(@Req() request: Request) {
+    const token = request.headers.authorization;
+    const jwtToken = token.split(' ')[1];
+    return await this.chatService.getRoomsForUser(jwtToken);
   }
 }

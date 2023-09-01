@@ -1,7 +1,7 @@
-import { useAuth } from "../context/AuthProvider";
+import useAuthActions from "../hooks/useAuth";
 
 const LogoutButton = () => {
-  const { logoutUser } = useAuth();
+  const { logoutUser } = useAuthActions();
 
   const handleLogout = () => {
     logoutUser();

@@ -14,7 +14,7 @@ export interface IClientMessage {
 
 export interface IStoredMessage extends IClientMessage {
   id: string;
-  createdAt: string;
+  createdAt: number;
 }
 
 export interface IUser {
@@ -38,10 +38,12 @@ export interface ISignUpRequest {
 export interface IRoom {
   id: number;
   name: string;
+  isMember: boolean;
 }
 
 export interface IStoredRoom extends IRoom {
   messages: IStoredMessage[];
+  participants: IUser[];
 }
 
 export interface ICreateRoomRequest {
@@ -55,11 +57,4 @@ export interface IDeleteRoomRequest {
 export interface IUpdateRoomRequest {
   id: string;
   name: string;
-}
-
-export interface IRoomParticipant {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
 }

@@ -1,13 +1,19 @@
-import { IClientMessage, IRoom } from "../interfaces/interfaces";
+import { IClientMessage, IRoom, IUser } from "../interfaces/interfaces";
 import socket from "../utils/socketUtil";
 
 const useChatActions = () => {
   const sendMessageToServer = (message: IClientMessage) => {
-    socket.emit("sendMessage", message);
+    socket.emit("messageFromClient", message);
   };
 
-  const joinRoom = (room: IRoom) => {
-    socket.emit("joinRoom", room);
+  const enterRoom = (room: IRoom, user: IUser) => {
+    const data = { room, user };
+    socket.emit("enterRoom", data);
+  };
+
+  const requestToJoinRoom = (room: IRoom, user: IUser) => {
+    const data = { room, user };
+    socket.emit("requestJoinRoom", data);
   };
 
   const leaveRoom = (room: IRoom) => {
@@ -16,8 +22,9 @@ const useChatActions = () => {
 
   return {
     sendMessageToServer,
-    joinRoom,
+    enterRoom,
     leaveRoom,
+    requestToJoinRoom,
   };
 };
 

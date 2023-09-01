@@ -10,6 +10,7 @@ const Room = ({
   const roomClasses = isActive
     ? "bg-black border border-white"
     : "bg-teal-700 border border-gray-500 border-opacity-50  outline-2 outline-cyan-700";
+
   return (
     <>
       <div
