@@ -5,6 +5,7 @@ import useChatRooms from "../hooks/useChatRooms";
 import { IRoom } from "../interfaces/interfaces";
 import { resetRoomState, setCurrentRoom } from "../redux/features/chatSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import AddRoomButton from "./AddRoomButton";
 import Room from "./Room";
 
 const RoomsContainer = () => {
@@ -30,8 +31,8 @@ const RoomsContainer = () => {
   );
 
   return (
-    <div className="groups-container flex flex-col h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90">
-      <div className="groups-list flex flex-col h-full justify-center">
+    <div className="groups-container justify-center align-middle items-center flex flex-col h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90">
+      <div className="groups-list flex flex-col items-center h-full justify-center">
         {chatRooms.map((room) => (
           <Room
             key={room.name}
@@ -40,6 +41,7 @@ const RoomsContainer = () => {
             isActive={room.id === currentRoom?.id}
           ></Room>
         ))}
+        <AddRoomButton />
       </div>
     </div>
   );
