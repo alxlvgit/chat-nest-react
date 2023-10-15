@@ -1,15 +1,13 @@
 import { useCallback } from "react";
 import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
-import useChatRooms from "../hooks/useChatRooms";
-import { IRoom } from "../interfaces/interfaces";
+import { IRoom, IStoredRoom } from "../interfaces/interfaces";
 import { resetRoomState, setCurrentRoom } from "../redux/features/chatSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import AddRoomButton from "./AddRoomButton";
 import Room from "./Room";
 
-const RoomsContainer = () => {
-  const { chatRooms } = useChatRooms();
+const RoomsContainer = ({ chatRooms }: { chatRooms: IStoredRoom[] }) => {
   const { enterRoom } = useChatActions();
   const dispatch = useAppDispatch();
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);

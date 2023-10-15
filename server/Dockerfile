@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Adjust NODE_VERSION as desired
-ARG NODE_VERSION=19.0.0
+ARG NODE_VERSION=20.8.0
 FROM node:${NODE_VERSION}-slim as base
 
 LABEL fly_launch_runtime="NestJS/Prisma"
@@ -32,11 +32,12 @@ RUN npx prisma generate
 COPY --link . .
 
 # Build application
-RUN npm install --include=dev && \
+RUN npm install -g npm@10.2.0 && \
+    npm install --include=dev && \
+    npm i -g cookie-parser && \
     npm run build  && \
     npm prune --production
-
-
+  
 # Final stage for app image
 FROM base
 

@@ -3,9 +3,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from "../services/auth.service";
 import { toast } from "react-toastify";
+import useAuthActions from "../hooks/useAuth";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  useAuthActions();
   const [signup, { data, error }] = useSignupMutation();
   const initialValues = {
     password: "",

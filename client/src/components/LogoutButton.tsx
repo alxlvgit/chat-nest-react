@@ -3,8 +3,13 @@ import useAuthActions from "../hooks/useAuth";
 const LogoutButton = () => {
   const { logoutUser } = useAuthActions();
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    const loggedOut = await logoutUser();
+    if (loggedOut) {
+      console.log("Logged out successfully");
+    } else {
+      console.error("Failed to logout");
+    }
   };
 
   return (

@@ -15,17 +15,13 @@ const LoginForm = () => {
     password: "",
   };
 
-  // Handle login success or failure, request stored messages and navigate to home page
+ 
+  // Handle login success or failure
   useEffect(() => {
     if (data && !error) {
+      const { user } = data;
+      loginUser(user);
       toast.success("Login successful!");
-      const { access_token, firstName, lastName, email } = data;
-      const user = { firstName, lastName, email };
-      access_token &&
-        firstName &&
-        lastName &&
-        email &&
-        loginUser(access_token, user);
       navigate("/");
     } else if (error) {
       console.error("Login failed:", error);
@@ -39,7 +35,8 @@ const LoginForm = () => {
     password: string;
   }) => {
     const { email, password } = formValues;
-    login({ email, password });
+    await login({ email, password });
+    console.log(data, error);
   };
 
   return (

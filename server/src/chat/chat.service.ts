@@ -1,14 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { IMessage } from 'src/interfaces/interfaces';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ChatService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // Create a new message
   async createMessage(message: IMessage) {
@@ -26,13 +22,9 @@ export class ChatService {
   }
 
   // Get all rooms and verify the user
-  async getRoomsForUser(token: string) {
+  async getRoomsForUser(email: string) {
     try {
-      const decodedToken = this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      const userEmail = decodedToken.email;
-      const rooms = await this.getRooms(userEmail);
+      const rooms = await this.getRooms(email);
       return rooms;
     } catch (error) {
       console.log(error);

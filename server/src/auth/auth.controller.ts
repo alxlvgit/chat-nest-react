@@ -18,15 +18,21 @@ export class AuthController {
   @Post('login')
   async login(@Request() req, @Response() res) {
     const token = await this.authService.login(req.user);
-
-    // Set the cookie with the token
+    // Set the secure cookie with the token
     res.cookie('jwtToken', token, {
       httpOnly: true,
       secure: true,
+      expires: new Date(Date.now() + 3600000), // 1 hour
       sameSite: 'strict',
     });
+    const { password, ...user } = req.user;
+    res.json({ user: user });
+  }
 
-    return res.json(token);
+  @Post('logout')
+  async logout(@Response() res) {
+    res.clearCookie('jwtToken');
+    res.json({ message: 'Logged out' });
   }
 
   @UseGuards(JwtAuthGuard)

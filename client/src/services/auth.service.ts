@@ -13,6 +13,7 @@ export const authAPI = createApi({
         url: `login`,
         method: "POST",
         body: { email, password },
+        credentials: "include", // to set secure cookie
       }),
     }),
     signup: build.mutation<any, ISignUpRequest>({
@@ -22,7 +23,15 @@ export const authAPI = createApi({
         body: { email, password, firstName, lastName },
       }),
     }),
+    logout: build.mutation<any, void>({
+      query: () => ({
+        url: `logout`,
+        method: "POST",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation } = authAPI;
+export const { useLoginMutation, useSignupMutation, useLogoutMutation } =
+  authAPI;

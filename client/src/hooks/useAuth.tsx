@@ -1,39 +1,49 @@
-import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { IUser } from "../interfaces/interfaces";
 import { resetChatState } from "../redux/features/chatSlice";
 import { useAppDispatch } from "../redux/hooks";
-import { setLoggedIn, setLoggedOut } from "../redux/features/authSlice";
+import { setLoggedInUser, setLoggedOut } from "../redux/features/authSlice";
+import { useLogoutMutation } from "../services/auth.service";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const useAuthActions = () => {
-  const TOKEN_KEY = "jwtToken";
   const USER_KEY = "user";
 
-  const [cookies, setCookie, removeCookie] = useCookies([TOKEN_KEY, USER_KEY]);
+  const [cookies, setCookie, removeCookie] = useCookies([USER_KEY]);
+  const [logout, { data, error }] = useLogoutMutation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   // Check if token and user exists in cookies on initial load
   useEffect(() => {
-    const token = cookies[TOKEN_KEY];
     const user = cookies[USER_KEY];
-    if (token && user) {
-      dispatch(setLoggedIn({ token, user }));
+    if (user) {
+      dispatch(setLoggedInUser(user));
     }
   }, [cookies]);
 
-  const loginUser = (token: string, user: IUser) => {
+  const loginUser = (user: IUser) => {
     const expirationTime = new Date();
-    expirationTime.setTime(expirationTime.getTime() + 3600 * 1000);
-    setCookie(TOKEN_KEY, token, { path: "/", expires: expirationTime });
+    expirationTime.setTime(expirationTime.getTime() + 3600 * 1000); // 1 hour
     setCookie(USER_KEY, user, { path: "/", expires: expirationTime });
-    dispatch(setLoggedIn({ token, user }));
+    dispatch(setLoggedInUser(user));
   };
 
-  const logoutUser = () => {
-    removeCookie(TOKEN_KEY, { path: "/" });
+  const logoutUser = async () => {
+    await logout();
+    if (error) {
+      console.error("Failed to logout:", error);
+      return false;
+    }
+    if (data) {
+      console.log("Logged out successfully");
+    }
     removeCookie(USER_KEY, { path: "/" });
     dispatch(resetChatState());
     dispatch(setLoggedOut());
+    navigate("/login");
+    return true;
   };
 
   return { loginUser, logoutUser };
