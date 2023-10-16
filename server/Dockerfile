@@ -32,11 +32,8 @@ RUN npx prisma generate
 COPY --link . .
 
 # Build application
-RUN npm install -g npm@10.2.0 && \
-    npm install --include=dev && \
-    npm i -g cookie-parser && \
-    npm run build  && \
-    npm prune --production
+RUN npm install --include=dev && \
+    npm run build 
   
 # Final stage for app image
 FROM base

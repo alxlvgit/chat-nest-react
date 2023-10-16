@@ -23,7 +23,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       expires: new Date(Date.now() + 3600000), // 1 hour
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     const { password, ...user } = req.user;
     res.json({ user: user });
