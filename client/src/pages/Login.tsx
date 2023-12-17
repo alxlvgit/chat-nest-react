@@ -1,12 +1,11 @@
 import { Formik, Form, Field } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLoginMutation } from "../services/auth.service";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import useAuthActions from "../hooks/useAuth";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   const { loginUser } = useAuthActions();
   const [login, { data, error }] = useLoginMutation();
 
@@ -15,14 +14,12 @@ const LoginForm = () => {
     password: "",
   };
 
- 
   // Handle login success or failure
   useEffect(() => {
-    if (data && !error) {
+    if (data && data.user && !error) {
       const { user } = data;
       loginUser(user);
       toast.success("Login successful!");
-      navigate("/");
     } else if (error) {
       console.error("Login failed:", error);
       toast.error("Login failed! Please try again.");

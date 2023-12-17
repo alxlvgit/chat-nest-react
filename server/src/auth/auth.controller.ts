@@ -18,6 +18,9 @@ export class AuthController {
   @Post('login')
   async login(@Request() req, @Response() res) {
     const token = await this.authService.login(req.user);
+    if (!token?.access_token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
     // Set the secure cookie with the token
     res.cookie('jwtToken', token, {
       httpOnly: true,
@@ -25,13 +28,19 @@ export class AuthController {
       expires: new Date(Date.now() + 3600000), // 1 hour
       sameSite: 'none',
     });
-    const { password, ...user } = req.user;
+    const { ...user } = req.user;
     res.json({ user: user });
   }
 
   @Post('logout')
   async logout(@Response() res) {
-    res.clearCookie('jwtToken');
+    res.clearCookie('jwtToken', {
+      httpOnly: true,
+      secure: true,
+      expires: new Date(0), // Set the cookie to expire immediately
+      sameSite: 'none',
+    });
+    console.log('Logged out');
     res.json({ message: 'Logged out' });
   }
 

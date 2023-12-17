@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IMessage } from 'src/interfaces/interfaces';
 import { PrismaService } from 'src/prisma.service';
 
@@ -28,7 +28,7 @@ export class ChatService {
       return rooms;
     } catch (error) {
       console.log(error);
-      throw new UnauthorizedException('Invalid token');
+      throw new Error('Could not get the rooms');
     }
   }
 

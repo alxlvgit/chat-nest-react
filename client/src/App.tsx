@@ -14,31 +14,29 @@ function App() {
 
     return (
       <Routes>
-        {!authenticated ? (
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Navigate to="/login" />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Chat />} />
-            <Route path="/login" element={<Navigate to="/" />} />
-            <Route path="/register" element={<Navigate to="/" />} />
-          </>
-        )}
+        <Route
+          path="/login"
+          element={authenticated ? <Navigate to="/" /> : <Login />}
+        />
+        <Route
+          path="/register"
+          element={authenticated ? <Navigate to="/" /> : <Register />}
+        />
+        <Route
+          path="/"
+          element={authenticated ? <Chat /> : <Navigate to="/login" />}
+        />
       </Routes>
     );
   }
 
   return (
-<>
+    <>
       <ToastContainer />
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
     </>
-  
   );
 }
 

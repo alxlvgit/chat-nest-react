@@ -28,6 +28,7 @@ const useAuthActions = () => {
     expirationTime.setTime(expirationTime.getTime() + 3600 * 1000); // 1 hour
     setCookie(USER_KEY, user, { path: "/", expires: expirationTime });
     dispatch(setLoggedInUser(user));
+    navigate("/");
   };
 
   const logoutUser = async () => {

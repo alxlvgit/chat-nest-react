@@ -22,13 +22,16 @@ export class ChatController {
         secret: process.env.JWT_SECRET,
       });
       const userEmail = decodedToken?.email;
+      if (!userEmail) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
       const rooms = await this.chatService.getRoomsForUser(userEmail);
       return res.json({ rooms });
     } catch (error) {
       console.log(error);
-      return res
-        .status(401)
-        .json({ message: 'Could not get the rooms. Unauthorized.' });
+      return res.status(500).json({
+        message: 'Internal server error. Could not retrieve the rooms',
+      });
     }
   }
 }
