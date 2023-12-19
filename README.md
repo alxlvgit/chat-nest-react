@@ -1,7 +1,7 @@
 # Live Chat Application
 
 A real-time chat application that allows users to join chat rooms and communicate with each other instantly.
-Built by using React, NestJS, Socket.IO, Tailwind CSS.
+Built by using React, NestJS, Redux, RTK Query, Socket.IO, Tailwind CSS.
 ## Features
 
 - User authentication with JWT
