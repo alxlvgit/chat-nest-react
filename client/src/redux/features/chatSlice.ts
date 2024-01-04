@@ -11,6 +11,7 @@ type ChatState = {
   rooms: IStoredRoom[];
   currentRoom: IRoom | undefined;
   roomMembers: IUser[];
+  hideRooms: boolean;
 };
 
 const initialState: ChatState = {
@@ -18,6 +19,7 @@ const initialState: ChatState = {
   rooms: [],
   currentRoom: undefined,
   roomMembers: [],
+  hideRooms: true,
 };
 
 const chatSlice = createSlice({
@@ -45,6 +47,9 @@ const chatSlice = createSlice({
     setRoomMembers: (state, action: PayloadAction<IUser[]>) => {
       state.roomMembers = action.payload;
     },
+    setHideRooms: (state, action: PayloadAction<boolean>) => {
+      state.hideRooms = action.payload;
+    },
     resetChatState: () => initialState,
     resetRoomState: (state) => {
       state.messages = [];
@@ -62,6 +67,7 @@ export const {
   setRoomMembers,
   resetChatState,
   updateRooms,
+  setHideRooms,
   resetRoomState,
 } = chatSlice.actions;
 

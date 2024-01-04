@@ -5,6 +5,7 @@ import { useAppSelector } from "../redux/hooks";
 import ChatForm from "./ChatForm";
 import LogoutButton from "./LogoutButton";
 import { MessageContainer } from "./MessageContainer";
+import ToggleRooms from "../components/ToggleRooms";
 
 const ChatContainer = () => {
   useRoomData();
@@ -19,6 +20,7 @@ const ChatContainer = () => {
   return (
     <div className="chatContainer flex flex-col w-full h-full relative">
       <div className="chatHeader items-center text-center p-4 border-b-4 border-gray-800 border-opacity-90 flex justify-between">
+        <ToggleRooms />
         {currentRoom && (
           <div className="members-list flex flex-col items-start">
             <h1 className="text-lg font-bold">{currentRoom?.name}</h1>
@@ -40,7 +42,7 @@ const ChatContainer = () => {
         )}
         {user && currentRoom && !isMember && (
           <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-center">
               You are not a member of this room
             </h1>
             <button

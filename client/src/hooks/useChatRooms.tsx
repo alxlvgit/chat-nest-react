@@ -6,6 +6,7 @@ import useAuthActions from "./useAuth";
 
 const useChatRooms = () => {
   const chatRooms = useAppSelector((state) => state.chatSlice.rooms);
+  const hideRooms = useAppSelector((state) => state.chatSlice.hideRooms);
   const dispatch = useAppDispatch();
   const { logoutUser } = useAuthActions();
 
@@ -26,7 +27,7 @@ const useChatRooms = () => {
     fetchRooms();
   }, [data, error, isLoading, dispatch]);
 
-  return { chatRooms };
+  return { chatRooms, hideRooms };
 };
 
 export default useChatRooms;

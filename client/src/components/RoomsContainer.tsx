@@ -1,16 +1,19 @@
 import { useCallback } from "react";
 import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
-import { IRoom, IStoredRoom } from "../interfaces/interfaces";
+import { IRoom } from "../interfaces/interfaces";
 import { resetRoomState, setCurrentRoom } from "../redux/features/chatSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import AddRoomButton from "./AddRoomButton";
+import { twMerge } from "tailwind-merge";
+import useChatRooms from "../hooks/useChatRooms";
 import Room from "./Room";
 
-const RoomsContainer = ({ chatRooms }: { chatRooms: IStoredRoom[] }) => {
+const RoomsContainer = () => {
   const { enterRoom } = useChatActions();
   const dispatch = useAppDispatch();
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
+  const { chatRooms, hideRooms } = useChatRooms();
   const [cookies] = useCookies(["user"]);
   const user = cookies["user"];
 
@@ -29,7 +32,12 @@ const RoomsContainer = ({ chatRooms }: { chatRooms: IStoredRoom[] }) => {
   );
 
   return (
-    <div className="groups-container justify-center align-middle items-center flex flex-col h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90">
+    <div
+      className={twMerge(
+        "groups-container justify-center align-middle items-center h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90",
+        hideRooms ? "hidden sm:flex flex-col" : "flex flex-col"
+      )}
+    >
       <div className="groups-list flex flex-col items-center h-full justify-center">
         {chatRooms.map((room) => (
           <Room
