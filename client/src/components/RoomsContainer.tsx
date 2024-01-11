@@ -13,7 +13,7 @@ const RoomsContainer = () => {
   const { enterRoom } = useChatActions();
   const dispatch = useAppDispatch();
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
-  const { chatRooms, hideRooms } = useChatRooms();
+  const { chatRooms, hideRooms, isLoading } = useChatRooms();
   const [cookies] = useCookies(["user"]);
   const user = cookies["user"];
 
@@ -34,21 +34,29 @@ const RoomsContainer = () => {
   return (
     <div
       className={twMerge(
-        "groups-container justify-center align-middle items-center h-full p-4 col-auto border-r-4 border-gray-800 border-opacity-90",
+        "groups-container justify-center align-middle items-center h-full p-4 col-auto border-r-4 max-w-[100px]  border-gray-800 border-opacity-90",
         hideRooms ? "hidden sm:flex flex-col" : "flex flex-col"
       )}
     >
-      <div className="groups-list flex flex-col items-center h-full justify-center">
-        {chatRooms.map((room) => (
-          <Room
-            key={room.name}
-            name={room.name}
-            onClick={() => handleRoomClick(room)}
-            isActive={room.id === currentRoom?.id}
-          ></Room>
-        ))}
-        <AddRoomButton />
-      </div>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center h-full">
+          <h1 className="text-base font-bold text-center animate-pulse">
+            Loading the rooms...
+          </h1>
+        </div>
+      ) : (
+        <div className="groups-list flex flex-col items-center h-full justify-center">
+          {chatRooms.map((room) => (
+            <Room
+              key={room.name}
+              name={room.name}
+              onClick={() => handleRoomClick(room)}
+              isActive={room.id === currentRoom?.id}
+            ></Room>
+          ))}
+          <AddRoomButton />
+        </div>
+      )}
     </div>
   );
 };

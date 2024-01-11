@@ -27,7 +27,7 @@ const useChatRooms = () => {
     fetchRooms();
   }, [data, error, isLoading, dispatch]);
 
-  return { chatRooms, hideRooms };
+  return { chatRooms, hideRooms, isLoading };
 };
 
 export default useChatRooms;

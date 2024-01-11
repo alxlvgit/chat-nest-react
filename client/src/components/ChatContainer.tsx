@@ -36,8 +36,10 @@ const ChatContainer = () => {
       <div className="flex p-4 flex-col flex-grow overflow-y-auto">
         {!currentRoom && (
           <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="text-2xl font-bold">Welcome to Chat App! </h1>
-            <p className="text-lg font-bold">
+            <h1 className="text-2xl font-bold text-center">
+              Welcome to Chat App!{" "}
+            </h1>
+            <p className="text-lg font-bold text-center">
               Please select a room to start chatting
             </p>
           </div>
