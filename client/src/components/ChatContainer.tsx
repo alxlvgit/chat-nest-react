@@ -18,17 +18,19 @@ const ChatContainer = () => {
   const isMember = currentRoom?.isMember;
 
   return (
-    <div className="chatContainer flex flex-col w-full h-full relative">
-      <div className="chatHeader items-center text-center p-4 border-b-4 border-gray-800 border-opacity-90 flex justify-between">
-        <ToggleRooms />
-        {currentRoom && (
-          <div className="members-list flex flex-col items-start">
-            <h1 className="text-lg font-bold">{currentRoom?.name}</h1>
-            <p className="text-xs text-gray-500 font-bold">
-              {isMember && `Members: ${roomMembers.length}`}
-            </p>
-          </div>
-        )}
+    <div className="chat-container flex flex-col w-full h-full relative">
+      <div className="chat-header sm:items-center text-center p-4 border-b-4 border-gray-800 border-opacity-90 flex flex-col items-start sm:flex-row sm:justify-between">
+        <div className="flex flex-row items-center mb-3 sm:mb-0">
+          <ToggleRooms />
+          {currentRoom && (
+            <div className="members-list flex flex-col items-start">
+              <h1 className="text-lg font-bold">{currentRoom?.name}</h1>
+              <p className="text-xs text-gray-500 font-bold">
+                {isMember && `Members: ${roomMembers.length}`}
+              </p>
+            </div>
+          )}
+        </div>
         <LogoutButton />
       </div>
       <div className="flex p-4 flex-col flex-grow overflow-y-auto">

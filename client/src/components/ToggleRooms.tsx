@@ -13,7 +13,7 @@ export default function ToggleRooms() {
   return (
     <div
       className={twMerge(
-        "mr-3 sm:hidden w-6 h-6 rounded-full hover:cursor-pointer flex items-center justify-center"
+        "mr-5 sm:hidden w-6 h-6 rounded-full hover:cursor-pointer flex items-center justify-center"
       )}
       onClick={handleClicked}
     >

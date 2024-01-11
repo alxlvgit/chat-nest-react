@@ -19,9 +19,12 @@ export const MessageContainer = ({
     <div
       className={`${messageContainerClasses} w-fit text-sm  rounded-xl m-2 max-w-xs`}
     >
-      <div className="flex justify-between align-middle items-center">
-        <p className="mx-3 my-1 text-sm text-cyan-600"> {sender}</p>
-        <p className="mx-3 my-1 text-xs text-gray-500"> {createdAtFormatted}</p>
+      <div className="flex flex-col justify-between align-middle items-start sm:items-center sm:flex-row">
+        <p className="mx-3 sm:my-1 text-sm text-cyan-600"> {sender}</p>
+        <p className="mx-3 sm:my-1 mb-3 sm:mb-0 sm:text-xs text-[10px] text-gray-500">
+          {" "}
+          {createdAtFormatted}
+        </p>
       </div>
       <h1 className="break-words px-3 pb-2 text-gray-200">{textContent}</h1>
     </div>
