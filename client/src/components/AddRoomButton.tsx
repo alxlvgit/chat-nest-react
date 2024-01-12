@@ -1,10 +1,14 @@
+import useChatActions from "../hooks/useChatActions";
 import { setCurrentRoom, setRooms } from "../redux/features/chatSlice";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { useCreateRoomMutation } from "../services/chat.service";
 
 const AddRoomButton = () => {
   const [createRoom] = useCreateRoomMutation();
   const dispatch = useAppDispatch();
+  const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
+  const { enterRoom } = useChatActions();
+  const user = useAppSelector((state) => state.authSlice.user);
 
   const handleCreateRoom = async () => {
     console.log("Creating test room...");
@@ -13,6 +17,9 @@ const AddRoomButton = () => {
       const rooms = response.data.rooms;
       dispatch(setRooms(rooms));
       dispatch(setCurrentRoom(rooms[rooms.length - 1]));
+      currentRoom?.id !== rooms[rooms.length - 1].id &&
+        user &&
+        enterRoom(rooms[rooms.length - 1], user);
     }
   };
 
