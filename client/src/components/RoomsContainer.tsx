@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useCookies } from "react-cookie";
 import useChatActions from "../hooks/useChatActions";
 import { IRoom } from "../interfaces/interfaces";
@@ -8,6 +8,7 @@ import AddRoomButton from "./AddRoomButton";
 import { twMerge } from "tailwind-merge";
 import useChatRooms from "../hooks/useChatRooms";
 import Room from "./Room";
+import AddRoomModal from "./AddRoomModal";
 
 const RoomsContainer = () => {
   const { enterRoom } = useChatActions();
@@ -16,6 +17,10 @@ const RoomsContainer = () => {
   const { chatRooms, hideRooms, isLoading } = useChatRooms();
   const [cookies] = useCookies(["user"]);
   const user = cookies["user"];
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
 
   const handleRoomClick = useCallback(
     (room: IRoom) => {
@@ -54,7 +59,8 @@ const RoomsContainer = () => {
               isActive={room.id === currentRoom?.id}
             ></Room>
           ))}
-          <AddRoomButton />
+          <AddRoomButton openModal={openModal} />
+          <AddRoomModal isOpen={isModalOpen} setModalClosed={closeModal} />
         </div>
       )}
     </div>
