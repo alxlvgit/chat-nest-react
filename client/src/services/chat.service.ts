@@ -24,19 +24,22 @@ export const chatAPI = createApi({
       query: (id) => ({
         url: `room/${id}`,
         method: "GET",
+        credentials: "include",
       }),
     }),
     createRoom: build.mutation<any, ICreateRoomRequest>({
-      query: (name) => ({
+      query: (roomData) => ({
         url: `room`,
         method: "POST",
-        body: { name },
+        body: roomData,
+        credentials: "include",
       }),
     }),
     deleteRoom: build.mutation<any, IDeleteRoomRequest>({
       query: (id) => ({
         url: `room/${id}`,
         method: "DELETE",
+        credentials: "include",
       }),
     }),
     updateRoom: build.mutation<any, IUpdateRoomRequest>({
@@ -44,6 +47,7 @@ export const chatAPI = createApi({
         url: `room/${id}`,
         method: "PUT",
         body: { name },
+        credentials: "include",
       }),
     }),
   }),

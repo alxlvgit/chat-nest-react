@@ -33,9 +33,9 @@ model Message {
 
 model Room {
   id           Int           @id @default(autoincrement())
-  creatorId    Int
+  creatorEmail String
   name         String
-  creator      User          @relation(fields: [creatorId], references: [id])
+  creator      User          @relation(fields: [creatorEmail], references: [email])
   participants User[]        @relation("RoomParticipants")
   joinRequests JoinRequest[]
   messages     Message[]

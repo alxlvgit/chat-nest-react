@@ -104,4 +104,23 @@ export class ChatService {
       },
     });
   }
+
+  // Create a new room
+  async createRoom(name: string, userEmail: string) {
+    const data = {
+      name,
+      participants: {
+        connect: {
+          email: userEmail,
+        },
+      },
+      creatorEmail: userEmail,
+    };
+    await this.prisma.room.create({
+      data,
+    });
+
+    const rooms = await this.getRooms(userEmail);
+    return rooms;
+  }
 }

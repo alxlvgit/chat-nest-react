@@ -21,5 +21,5 @@ export interface IRoom {
 export interface IStoredRoom extends IRoom {
   messages: IMessage[];
   participants: IUser[];
-  creatorId: number;
+  creatorEmail: string;
 }

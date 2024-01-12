@@ -1,6 +1,26 @@
+import { setCurrentRoom, setRooms } from "../redux/features/chatSlice";
+import { useAppDispatch } from "../redux/hooks";
+import { useCreateRoomMutation } from "../services/chat.service";
+
 const AddRoomButton = () => {
+  const [createRoom] = useCreateRoomMutation();
+  const dispatch = useAppDispatch();
+
+  const handleCreateRoom = async () => {
+    console.log("Creating test room...");
+    const response = await createRoom({ name: "test room" });
+    if ("data" in response) {
+      const rooms = response.data.rooms;
+      dispatch(setRooms(rooms));
+      dispatch(setCurrentRoom(rooms[rooms.length - 1]));
+    }
+  };
+
   return (
-    <div className="add-room-button mt-10 hover:bg-white w-12 h-12 rounded-full hover:cursor-pointer flex items-center justify-center">
+    <div
+      onClick={handleCreateRoom}
+      className="add-room-button mt-10 hover:bg-white w-12 h-12 rounded-full hover:cursor-pointer flex items-center justify-center"
+    >
       <svg
         fill="#338a84"
         viewBox="0 0 20 20"
