@@ -32,7 +32,11 @@ export default function AddRoomModal({
       currentRoom?.id !== rooms[rooms.length - 1].id &&
         user &&
         enterRoom(rooms[rooms.length - 1], user);
+      setRoomName("");
+      setWarning("");
       setModalClosed();
+    } else {
+      console.warn("Error creating room");
     }
   };
 
@@ -48,7 +52,11 @@ export default function AddRoomModal({
       <div className="flex m-auto mt-10 bg-white flex-col justify-center sm:w-1/3 w-4/5 gap-5 rounded-lg border p-8 ">
         <div className="flex justify-end">
           <button
-            onClick={setModalClosed}
+            onClick={() => {
+              setWarning("");
+              setRoomName("");
+              setModalClosed();
+            }}
             className="text-white rounded-md px-3 py-1 w-fit bg-red-500 hover:bg-red-600"
           >
             X
