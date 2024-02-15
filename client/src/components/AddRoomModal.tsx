@@ -17,9 +17,13 @@ export default function AddRoomModal({
   const currentRoom = useAppSelector((state) => state.chatSlice.currentRoom);
   const { enterRoom } = useChatActions();
   const user = useAppSelector((state) => state.authSlice.user);
+  const [warning, setWarning] = useState<string>("");
 
   const handleCreateRoom = async () => {
-    console.log("Creating test room...");
+    if (!roomName) {
+      setWarning("Room name is required");
+      return;
+    }
     const response = await createRoom({ name: roomName });
     if ("data" in response) {
       const rooms = response.data.rooms;
@@ -55,18 +59,20 @@ export default function AddRoomModal({
             Room Name
           </label>
           <input
-            className="block w-full py-2 px-3 border-none bg-gray-100  h-11 rounded-xl shadow-lg text-black hover:bg-blue-100 focus:bg-blue-100 focus:ring-0"
+            className="block w-full py-2 px-3 border-none bg-gray-200  h-11 rounded-xl shadow-lg text-black hover:bg-blue-100 focus:bg-blue-100 focus:ring-0"
             type="text"
             name="roomName"
             id="roomName"
+            placeholder="Enter room name"
             value={roomName}
             onChange={(event) => setRoomName(event.target.value)}
           />
         </form>
+        <p className="text-red-500 text-xs">{warning}</p>
         <div className="flex justify-start w-full">
           <button
             onClick={handleCreateRoom}
-            className="bg-blue-800 w-fit text-white rounded-md px-5 py-2 hover:bg-blue-600"
+            className="bg-cyan-800 w-fit text-white rounded-md px-5 py-2 hover:bg-cyan-900"
           >
             Create Room
           </button>
